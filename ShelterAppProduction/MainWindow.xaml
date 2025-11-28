@@ -5,8 +5,36 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:ShelterAppProduction"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
+        Title="Приют для животных" Height="700" Width="1200"
+        WindowStartupLocation="CenterScreen"
+        Background="{StaticResource LightBeige}">
     <Grid>
-        
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <Border Grid.Row="0" Background="{StaticResource PrimaryGreen}" Padding="10">
+            <Grid>
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Left">
+                    <Button Content="Каталог" Click="CatalogButton_Click" Margin="5"/>
+                    <Button Content="Избранное" Click="FavoritesButton_Click" Margin="5"/>
+                    <Button Content="Профиль" Click="ProfileButton_Click" Margin="5"/>
+                    <Button x:Name="AdminButton" Content="Админ-панель" Click="AdminButton_Click" Margin="5" Visibility="Collapsed"/>
+                </StackPanel>
+
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                    <TextBlock x:Name="UserNameTextBlock"
+                              Foreground="White"
+                              VerticalAlignment="Center"
+                              Margin="10,0"/>
+                    <Button Content="Выход" Click="LogoutButton_Click" Margin="5"/>
+                </StackPanel>
+            </Grid>
+        </Border>
+
+        <Frame x:Name="MainFrame"
+               Grid.Row="1"
+               NavigationUIVisibility="Hidden"/>
     </Grid>
 </Window>

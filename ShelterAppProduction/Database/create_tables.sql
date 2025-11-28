@@ -1,0 +1,82 @@
+CREATE TABLE IF NOT EXISTS Users (
+    Id SERIAL PRIMARY KEY,
+    Username VARCHAR(100) UNIQUE NOT NULL,
+    PasswordHash VARCHAR(255) NOT NULL,
+    Email VARCHAR(255),
+    FullName VARCHAR(255),
+    Role VARCHAR(50) DEFAULT 'User'
+);
+
+CREATE TABLE IF NOT EXISTS Guardian (
+    Id SERIAL PRIMARY KEY,
+    FullName VARCHAR(255) NOT NULL,
+    PhoneNumber VARCHAR(50),
+    Email VARCHAR(255),
+    Address TEXT,
+    RegistrationDate TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS Enclosure (
+    Id SERIAL PRIMARY KEY,
+    Name VARCHAR(255) NOT NULL,
+    Type VARCHAR(100),
+    Capacity INTEGER,
+    Location VARCHAR(255)
+);
+
+CREATE TABLE IF NOT EXISTS Animal (
+    Id SERIAL PRIMARY KEY,
+    Name VARCHAR(255) NOT NULL,
+    Type VARCHAR(100),
+    Breed VARCHAR(100),
+    DateOfBirth DATE,
+    IdEnclosure INTEGER REFERENCES Enclosure(Id),
+    IdGuardian INTEGER REFERENCES Guardian(Id),
+    CurrentStatus VARCHAR(50) DEFAULT 'Available',
+    Gender VARCHAR(20),
+    Size VARCHAR(50),
+    Temperament VARCHAR(100)
+);
+
+CREATE TABLE IF NOT EXISTS Application (
+    Id SERIAL PRIMARY KEY,
+    IdAnimal INTEGER REFERENCES Animal(Id) ON DELETE CASCADE,
+    IdGuardian INTEGER REFERENCES Guardian(Id) ON DELETE CASCADE,
+    ApplicationDate TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    Status VARCHAR(50) DEFAULT 'Pending',
+    Comments TEXT
+);
+
+CREATE TABLE IF NOT EXISTS Veterinarian (
+    Id SERIAL PRIMARY KEY,
+    FullName VARCHAR(255) NOT NULL,
+    Specialization VARCHAR(100),
+    PhoneNumber VARCHAR(50),
+    LicenseNumber VARCHAR(100)
+);
+
+CREATE TABLE IF NOT EXISTS Medical_Record (
+    Id SERIAL PRIMARY KEY,
+    IdAnimal INTEGER REFERENCES Animal(Id) ON DELETE CASCADE,
+    IdVeterinarian INTEGER REFERENCES Veterinarian(Id),
+    VisitDate TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    Diagnosis TEXT,
+    Treatment TEXT,
+    Notes TEXT
+);
+
+CREATE TABLE IF NOT EXISTS Shelter_Employee (
+    Id SERIAL PRIMARY KEY,
+    FullName VARCHAR(255) NOT NULL,
+    Position VARCHAR(100),
+    PhoneNumber VARCHAR(50),
+    HireDate DATE
+);
+
+CREATE TABLE IF NOT EXISTS Favorite (
+    Id SERIAL PRIMARY KEY,
+    IdUser INTEGER REFERENCES Users(Id) ON DELETE CASCADE,
+    IdAnimal INTEGER REFERENCES Animal(Id) ON DELETE CASCADE,
+    AddedDate TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE(IdUser, IdAnimal)
+);

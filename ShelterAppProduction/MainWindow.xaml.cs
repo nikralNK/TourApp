@@ -1,28 +1,55 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
+﻿using System.Windows;
+using ShelterAppProduction.Pages;
+using ShelterAppProduction.Services;
 
 namespace ShelterAppProduction
 {
-    /// <summary>
-    /// Логика взаимодействия для MainWindow.xaml
-    /// </summary>
     public partial class MainWindow : Window
     {
         public MainWindow()
         {
             InitializeComponent();
+            Manager.MainFrame = MainFrame;
+
+            if (SessionManager.IsAuthenticated)
+            {
+                UserNameTextBlock.Text = $"Добро пожаловать, {SessionManager.CurrentUser.FullName ?? SessionManager.CurrentUser.Username}";
+
+                if (SessionManager.IsAdmin)
+                {
+                    AdminButton.Visibility = Visibility.Visible;
+                }
+            }
+
+            MainFrame.Navigate(new CatalogPage());
+        }
+
+        private void CatalogButton_Click(object sender, RoutedEventArgs e)
+        {
+            MainFrame.Navigate(new CatalogPage());
+        }
+
+        private void FavoritesButton_Click(object sender, RoutedEventArgs e)
+        {
+            MainFrame.Navigate(new FavoritesPage());
+        }
+
+        private void ProfileButton_Click(object sender, RoutedEventArgs e)
+        {
+            MainFrame.Navigate(new ProfilePage());
+        }
+
+        private void AdminButton_Click(object sender, RoutedEventArgs e)
+        {
+            MainFrame.Navigate(new AdminPage());
+        }
+
+        private void LogoutButton_Click(object sender, RoutedEventArgs e)
+        {
+            SessionManager.CurrentUser = null;
+            var loginWindow = new LoginWindow();
+            loginWindow.Show();
+            this.Close();
         }
     }
 }

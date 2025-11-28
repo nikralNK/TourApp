@@ -1,0 +1,61 @@
+<Page x:Class="ShelterAppProduction.Pages.ProfilePage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+      xmlns:local="clr-namespace:ShelterAppProduction.Pages"
+      mc:Ignorable="d"
+      d:DesignHeight="600" d:DesignWidth="1200"
+      Background="{StaticResource LightBeige}">
+
+    <Grid Margin="20">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <TextBlock Grid.Row="0" Text="Профиль пользователя" Style="{StaticResource TitleText}"/>
+
+        <Border Grid.Row="1" Style="{StaticResource CardBorder}" Width="500" VerticalAlignment="Top" Margin="0,20,0,0">
+            <StackPanel>
+                <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
+                    <TextBlock Text="Имя пользователя: " FontWeight="Bold" FontSize="16" Width="200"/>
+                    <TextBlock x:Name="UsernameTextBlock" FontSize="16"/>
+                </StackPanel>
+
+                <StackPanel Orientation="Horizontal" Margin="0,15,0,0">
+                    <TextBlock Text="Полное имя: " FontWeight="Bold" FontSize="16" Width="200"/>
+                    <TextBlock x:Name="FullNameTextBlock" FontSize="16"/>
+                </StackPanel>
+
+                <StackPanel Orientation="Horizontal" Margin="0,15,0,0">
+                    <TextBlock Text="Email: " FontWeight="Bold" FontSize="16" Width="200"/>
+                    <TextBlock x:Name="EmailTextBlock" FontSize="16"/>
+                </StackPanel>
+
+                <StackPanel Orientation="Horizontal" Margin="0,15,0,0">
+                    <TextBlock Text="Роль: " FontWeight="Bold" FontSize="16" Width="200"/>
+                    <TextBlock x:Name="RoleTextBlock" FontSize="16"/>
+                </StackPanel>
+
+                <Separator Margin="0,20,0,20"/>
+
+                <TextBlock Text="Смена пароля" Style="{StaticResource SubtitleText}"/>
+
+                <TextBlock Text="Новый пароль:" Margin="0,10,0,0"/>
+                <PasswordBox x:Name="NewPasswordBox" Height="40"/>
+
+                <TextBlock Text="Подтвердите пароль:" Margin="0,10,0,0"/>
+                <PasswordBox x:Name="ConfirmPasswordBox" Height="40"/>
+
+                <Button Content="Изменить пароль" Click="ChangePasswordButton_Click" Margin="0,20,0,0" Height="45"/>
+
+                <TextBlock x:Name="PasswordStatusTextBlock"
+                          Text=""
+                          HorizontalAlignment="Center"
+                          Margin="0,10,0,0"
+                          TextWrapping="Wrap"/>
+            </StackPanel>
+        </Border>
+    </Grid>
+</Page>

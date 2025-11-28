@@ -1,0 +1,87 @@
+<Page x:Class="ShelterAppProduction.Pages.FavoritesPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+      xmlns:local="clr-namespace:ShelterAppProduction.Pages"
+      mc:Ignorable="d"
+      d:DesignHeight="600" d:DesignWidth="1200"
+      Background="{StaticResource LightBeige}">
+
+    <Grid Margin="20">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <TextBlock Grid.Row="0" Text="Избранное" Style="{StaticResource TitleText}"/>
+
+        <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" Margin="0,10,0,0">
+            <StackPanel x:Name="ContentPanel">
+                <TextBlock x:Name="EmptyMessageTextBlock"
+                          Text="Список избранного пуст. Добавьте животных из каталога."
+                          Style="{StaticResource SubtitleText}"
+                          HorizontalAlignment="Center"
+                          Margin="0,50,0,0"
+                          Visibility="Collapsed"/>
+
+                <ItemsControl x:Name="FavoritesItemsControl">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <WrapPanel Orientation="Horizontal"/>
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Border Style="{StaticResource CardBorder}" Width="280" Height="380" Cursor="Hand" MouseDown="AnimalCard_MouseDown">
+                                <StackPanel>
+                                    <TextBlock Text="{Binding Name}" Style="{StaticResource SubtitleText}" HorizontalAlignment="Center"/>
+
+                                    <StackPanel Margin="0,10,0,0">
+                                        <StackPanel Orientation="Horizontal" Margin="0,5,0,0">
+                                            <TextBlock Text="Тип: " FontWeight="Bold"/>
+                                            <TextBlock Text="{Binding Type}"/>
+                                        </StackPanel>
+
+                                        <StackPanel Orientation="Horizontal" Margin="0,5,0,0">
+                                            <TextBlock Text="Порода: " FontWeight="Bold"/>
+                                            <TextBlock Text="{Binding Breed}"/>
+                                        </StackPanel>
+
+                                        <StackPanel Orientation="Horizontal" Margin="0,5,0,0">
+                                            <TextBlock Text="Возраст: " FontWeight="Bold"/>
+                                            <TextBlock>
+                                                <TextBlock.Text>
+                                                    <MultiBinding StringFormat="{}{0} лет">
+                                                        <Binding Path="Age"/>
+                                                    </MultiBinding>
+                                                </TextBlock.Text>
+                                            </TextBlock>
+                                        </StackPanel>
+
+                                        <StackPanel Orientation="Horizontal" Margin="0,5,0,0">
+                                            <TextBlock Text="Пол: " FontWeight="Bold"/>
+                                            <TextBlock Text="{Binding Gender}"/>
+                                        </StackPanel>
+
+                                        <StackPanel Orientation="Horizontal" Margin="0,5,0,0">
+                                            <TextBlock Text="Размер: " FontWeight="Bold"/>
+                                            <TextBlock Text="{Binding Size}"/>
+                                        </StackPanel>
+
+                                        <StackPanel Orientation="Horizontal" Margin="0,5,0,0">
+                                            <TextBlock Text="Характер: " FontWeight="Bold"/>
+                                            <TextBlock Text="{Binding Temperament}"/>
+                                        </StackPanel>
+                                    </StackPanel>
+
+                                    <Button Content="Подробнее" Click="DetailsButton_Click" Tag="{Binding Id}" Margin="0,10,0,0"/>
+                                </StackPanel>
+                            </Border>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </StackPanel>
+        </ScrollViewer>
+    </Grid>
+</Page>
