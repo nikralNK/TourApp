@@ -15,6 +15,7 @@ namespace ShelterAppProduction.Models
         public string Gender { get; set; }
         public string Size { get; set; }
         public string Temperament { get; set; }
+        public string Photo { get; set; }
 
         public int Age
         {

@@ -108,8 +108,8 @@ namespace ShelterAppProduction.Repositories
                 using (var conn = DatabaseHelper.GetConnection())
                 {
                     conn.Open();
-                    var query = @"INSERT INTO Animal (Name, Type, Breed, DateOfBirth, IdEnclosure, CurrentStatus, Gender, Size, Temperament)
-                                  VALUES (@name, @type, @breed, @dateOfBirth, @idEnclosure, @currentStatus, @gender, @size, @temperament)";
+                    var query = @"INSERT INTO Animal (Name, Type, Breed, DateOfBirth, IdEnclosure, CurrentStatus, Gender, Size, Temperament, Photo)
+                                  VALUES (@name, @type, @breed, @dateOfBirth, @idEnclosure, @currentStatus, @gender, @size, @temperament, @photo)";
                     using (var cmd = new NpgsqlCommand(query, conn))
                     {
                         cmd.Parameters.AddWithValue("@name", animal.Name);
@@ -121,6 +121,7 @@ namespace ShelterAppProduction.Repositories
                         cmd.Parameters.AddWithValue("@gender", animal.Gender ?? (object)DBNull.Value);
                         cmd.Parameters.AddWithValue("@size", animal.Size ?? (object)DBNull.Value);
                         cmd.Parameters.AddWithValue("@temperament", animal.Temperament ?? (object)DBNull.Value);
+                        cmd.Parameters.AddWithValue("@photo", animal.Photo ?? (object)DBNull.Value);
 
                         cmd.ExecuteNonQuery();
                         return true;
@@ -177,7 +178,8 @@ namespace ShelterAppProduction.Repositories
                 CurrentStatus = reader.IsDBNull(7) ? "Доступен" : reader.GetString(7),
                 Gender = reader.IsDBNull(8) ? null : reader.GetString(8),
                 Size = reader.IsDBNull(9) ? null : reader.GetString(9),
-                Temperament = reader.IsDBNull(10) ? null : reader.GetString(10)
+                Temperament = reader.IsDBNull(10) ? null : reader.GetString(10),
+                Photo = reader.IsDBNull(11) ? null : reader.GetString(11)
             };
         }
     }

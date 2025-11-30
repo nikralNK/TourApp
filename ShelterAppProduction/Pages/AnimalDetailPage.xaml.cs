@@ -1,5 +1,8 @@
+using System;
+using System.IO;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Media.Imaging;
 using ShelterAppProduction.Models;
 using ShelterAppProduction.Repositories;
 using ShelterAppProduction.Services;
@@ -36,6 +39,11 @@ namespace ShelterAppProduction.Pages
                 SizeTextBlock.Text = animal.Size ?? "Не указано";
                 TemperamentTextBlock.Text = animal.Temperament ?? "Не указано";
                 StatusTextBlock.Text = animal.CurrentStatus ?? "Не указано";
+
+                if (!string.IsNullOrWhiteSpace(animal.Photo) && File.Exists(animal.Photo))
+                {
+                    LoadPhoto(animal.Photo);
+                }
 
                 if (SessionManager.IsAuthenticated && favoriteRepository.IsFavorite(SessionManager.CurrentUser.Id, animalId))
                 {
@@ -96,6 +104,20 @@ namespace ShelterAppProduction.Pages
             PhoneTextBox.Clear();
             EmailTextBox.Clear();
             CommentsTextBox.Clear();
+        }
+
+        private void LoadPhoto(string path)
+        {
+            try
+            {
+                var bitmap = new BitmapImage();
+                bitmap.BeginInit();
+                bitmap.CacheOption = BitmapCacheOption.OnLoad;
+                bitmap.UriSource = new Uri(path, UriKind.Absolute);
+                bitmap.EndInit();
+                PhotoImage.Source = bitmap;
+            }
+            catch { }
         }
     }
 }

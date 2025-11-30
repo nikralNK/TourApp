@@ -28,6 +28,12 @@
                         </Grid.ColumnDefinitions>
 
                         <StackPanel Grid.Column="0">
+                            <TextBlock Text="Фото:" Margin="5"/>
+                            <Border BorderBrush="{StaticResource LightGray}" BorderThickness="2" Width="150" Height="150" Margin="5" HorizontalAlignment="Left" ClipToBounds="True">
+                                <Image x:Name="PhotoImage" Stretch="UniformToFill"/>
+                            </Border>
+                            <Button Content="Выбрать фото" Click="SelectPhotoButton_Click" Width="150" Height="35" Margin="5,0,5,10" HorizontalAlignment="Left"/>
+
                             <TextBlock Text="Кличка:" Margin="5"/>
                             <TextBox x:Name="NameTextBox" Height="40" Margin="5"/>
 

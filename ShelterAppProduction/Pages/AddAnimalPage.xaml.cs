@@ -1,6 +1,9 @@
 using System;
+using System.IO;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Media.Imaging;
+using Microsoft.Win32;
 using ShelterAppProduction.Models;
 using ShelterAppProduction.Repositories;
 
@@ -9,6 +12,7 @@ namespace ShelterAppProduction.Pages
     public partial class AddAnimalPage : Page
     {
         private AnimalRepository animalRepository = new AnimalRepository();
+        private string selectedPhotoPath = null;
 
         public AddAnimalPage()
         {
@@ -58,6 +62,31 @@ namespace ShelterAppProduction.Pages
                 return;
             }
 
+            string photoPathToSave = null;
+
+            if (!string.IsNullOrWhiteSpace(selectedPhotoPath))
+            {
+                try
+                {
+                    var photosFolder = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "AnimalPhotos");
+                    if (!Directory.Exists(photosFolder))
+                    {
+                        Directory.CreateDirectory(photosFolder);
+                    }
+
+                    var fileName = $"{Guid.NewGuid()}_{Path.GetFileName(selectedPhotoPath)}";
+                    var destPath = Path.Combine(photosFolder, fileName);
+
+                    File.Copy(selectedPhotoPath, destPath, true);
+                    photoPathToSave = destPath;
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"Ошибка при сохранении фото: {ex.Message}", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+                    return;
+                }
+            }
+
             var animal = new Animal
             {
                 Name = NameTextBox.Text.Trim(),
@@ -68,7 +97,8 @@ namespace ShelterAppProduction.Pages
                 Size = (SizeComboBox.SelectedItem as ComboBoxItem)?.Content.ToString(),
                 Temperament = string.IsNullOrWhiteSpace(TemperamentTextBox.Text) ? null : TemperamentTextBox.Text.Trim(),
                 IdEnclosure = EnclosureComboBox.SelectedValue != null ? (int?)EnclosureComboBox.SelectedValue : null,
-                CurrentStatus = (StatusComboBox.SelectedItem as ComboBoxItem)?.Content.ToString()
+                CurrentStatus = (StatusComboBox.SelectedItem as ComboBoxItem)?.Content.ToString(),
+                Photo = photoPathToSave
             };
 
             try
@@ -101,8 +131,39 @@ namespace ShelterAppProduction.Pages
             Manager.MainFrame.GoBack();
         }
 
+        private void SelectPhotoButton_Click(object sender, RoutedEventArgs e)
+        {
+            var openFileDialog = new OpenFileDialog
+            {
+                Filter = "Изображения|*.jpg;*.jpeg;*.png;*.bmp;*.gif",
+                Title = "Выберите фото животного"
+            };
+
+            if (openFileDialog.ShowDialog() == true)
+            {
+                selectedPhotoPath = openFileDialog.FileName;
+                LoadPhoto(selectedPhotoPath);
+            }
+        }
+
+        private void LoadPhoto(string path)
+        {
+            try
+            {
+                var bitmap = new BitmapImage();
+                bitmap.BeginInit();
+                bitmap.CacheOption = BitmapCacheOption.OnLoad;
+                bitmap.UriSource = new Uri(path, UriKind.Absolute);
+                bitmap.EndInit();
+                PhotoImage.Source = bitmap;
+            }
+            catch { }
+        }
+
         private void ClearForm()
         {
+            selectedPhotoPath = null;
+            PhotoImage.Source = null;
             NameTextBox.Text = "";
             TypeComboBox.SelectedIndex = -1;
             BreedTextBox.Text = "";
