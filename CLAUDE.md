@@ -11,6 +11,14 @@
 - Не добавлять строки типа "Co-Authored-By: Claude <noreply@anthropic.com>"
 - Не добавлять упоминания "Generated with Claude Code"
 
+## Git Push
+- При выполнении `git push` ВСЕГДА использовать SSH ключ `id_ed25519_shelter`
+- Команда для push:
+  ```bash
+  GIT_SSH_COMMAND='ssh -i ~/.ssh/id_ed25519_shelter -o IdentitiesOnly=yes' git push origin main
+  ```
+- Для других веток заменить `main` на название нужной ветки
+
 ---
 
 ## О проекте
