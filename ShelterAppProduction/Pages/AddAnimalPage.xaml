@@ -1,0 +1,93 @@
+<Page x:Class="ShelterAppProduction.Pages.AddAnimalPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+      xmlns:local="clr-namespace:ShelterAppProduction.Pages"
+      mc:Ignorable="d"
+      d:DesignHeight="600" d:DesignWidth="1200"
+      Background="{StaticResource LightBeige}">
+
+    <ScrollViewer VerticalScrollBarVisibility="Auto">
+        <Grid Margin="20">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+
+            <TextBlock Grid.Row="0" Text="Добавить новое животное" Style="{StaticResource TitleText}"/>
+
+            <Border Grid.Row="1" Style="{StaticResource CardBorder}" Margin="0,20,0,0" MaxWidth="800">
+                <StackPanel>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="20"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+
+                        <StackPanel Grid.Column="0">
+                            <TextBlock Text="Кличка:" Margin="5"/>
+                            <TextBox x:Name="NameTextBox" Height="40" Margin="5"/>
+
+                            <TextBlock Text="Тип:" Margin="5,10,5,5"/>
+                            <ComboBox x:Name="TypeComboBox" Height="40" Margin="5">
+                                <ComboBoxItem Content="Собака"/>
+                                <ComboBoxItem Content="Кошка"/>
+                                <ComboBoxItem Content="Птица"/>
+                                <ComboBoxItem Content="Другое"/>
+                            </ComboBox>
+
+                            <TextBlock Text="Порода:" Margin="5,10,5,5"/>
+                            <TextBox x:Name="BreedTextBox" Height="40" Margin="5"/>
+
+                            <TextBlock Text="Дата рождения:" Margin="5,10,5,5"/>
+                            <DatePicker x:Name="DateOfBirthPicker" Height="40" Margin="5" SelectedDate="{x:Static System:DateTime.Today}"/>
+
+                            <TextBlock Text="Пол:" Margin="5,10,5,5"/>
+                            <ComboBox x:Name="GenderComboBox" Height="40" Margin="5">
+                                <ComboBoxItem Content="Мужской"/>
+                                <ComboBoxItem Content="Женский"/>
+                            </ComboBox>
+                        </StackPanel>
+
+                        <StackPanel Grid.Column="2">
+                            <TextBlock Text="Размер:" Margin="5"/>
+                            <ComboBox x:Name="SizeComboBox" Height="40" Margin="5">
+                                <ComboBoxItem Content="Маленький"/>
+                                <ComboBoxItem Content="Средний"/>
+                                <ComboBoxItem Content="Большой"/>
+                            </ComboBox>
+
+                            <TextBlock Text="Характер:" Margin="5,10,5,5"/>
+                            <TextBox x:Name="TemperamentTextBox" Height="40" Margin="5"/>
+
+                            <TextBlock Text="Вольер:" Margin="5,10,5,5"/>
+                            <ComboBox x:Name="EnclosureComboBox" Height="40" Margin="5" DisplayMemberPath="Name" SelectedValuePath="Id"/>
+
+                            <TextBlock Text="Статус:" Margin="5,10,5,5"/>
+                            <ComboBox x:Name="StatusComboBox" Height="40" Margin="5">
+                                <ComboBoxItem Content="Available" IsSelected="True"/>
+                                <ComboBoxItem Content="Adopted"/>
+                                <ComboBoxItem Content="Reserved"/>
+                            </ComboBox>
+                        </StackPanel>
+                    </Grid>
+
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,30,0,10">
+                        <Button Content="Добавить животное" Click="AddAnimalButton_Click" Width="200" Height="45" Margin="10,0"/>
+                        <Button Content="Отмена" Click="CancelButton_Click" Width="150" Height="45" Margin="10,0"
+                                Background="{StaticResource LightGray}" Foreground="{StaticResource DarkGray}"/>
+                    </StackPanel>
+
+                    <TextBlock x:Name="StatusTextBlock"
+                              Text=""
+                              Foreground="Green"
+                              HorizontalAlignment="Center"
+                              Margin="10"
+                              FontWeight="Bold"/>
+                </StackPanel>
+            </Border>
+        </Grid>
+    </ScrollViewer>
+</Page>

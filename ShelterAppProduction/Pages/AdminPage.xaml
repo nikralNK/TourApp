@@ -20,7 +20,10 @@
             <StackPanel>
                 <TextBlock Text="Заявки на опекунство" Style="{StaticResource SubtitleText}"/>
 
-                <Button Content="Обновить список" Click="RefreshButton_Click" HorizontalAlignment="Right" Margin="0,10,0,10" Width="200"/>
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,10,0,10">
+                    <Button Content="Добавить животное" Click="AddAnimalButton_Click" Width="200" Margin="0,0,10,0" Background="{StaticResource PrimaryGreen}"/>
+                    <Button Content="Обновить список" Click="RefreshButton_Click" Width="200"/>
+                </StackPanel>
 
                 <DataGrid x:Name="ApplicationsDataGrid"
                          AutoGenerateColumns="False"

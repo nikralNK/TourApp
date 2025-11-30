@@ -34,6 +34,11 @@ namespace ShelterAppProduction.Pages
             LoadApplications();
         }
 
+        private void AddAnimalButton_Click(object sender, RoutedEventArgs e)
+        {
+            Manager.MainFrame.Navigate(new AddAnimalPage());
+        }
+
         private void ApproveButton_Click(object sender, RoutedEventArgs e)
         {
             var button = sender as Button;

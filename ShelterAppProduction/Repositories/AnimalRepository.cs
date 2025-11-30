@@ -101,6 +101,68 @@ namespace ShelterAppProduction.Repositories
             return null;
         }
 
+        public bool AddAnimal(Animal animal)
+        {
+            try
+            {
+                using (var conn = DatabaseHelper.GetConnection())
+                {
+                    conn.Open();
+                    var query = @"INSERT INTO Animal (Name, Type, Breed, DateOfBirth, IdEnclosure, CurrentStatus, Gender, Size, Temperament)
+                                  VALUES (@name, @type, @breed, @dateOfBirth, @idEnclosure, @currentStatus, @gender, @size, @temperament)";
+                    using (var cmd = new NpgsqlCommand(query, conn))
+                    {
+                        cmd.Parameters.AddWithValue("@name", animal.Name);
+                        cmd.Parameters.AddWithValue("@type", animal.Type ?? (object)DBNull.Value);
+                        cmd.Parameters.AddWithValue("@breed", animal.Breed ?? (object)DBNull.Value);
+                        cmd.Parameters.AddWithValue("@dateOfBirth", animal.DateOfBirth);
+                        cmd.Parameters.AddWithValue("@idEnclosure", animal.IdEnclosure ?? (object)DBNull.Value);
+                        cmd.Parameters.AddWithValue("@currentStatus", animal.CurrentStatus ?? "Available");
+                        cmd.Parameters.AddWithValue("@gender", animal.Gender ?? (object)DBNull.Value);
+                        cmd.Parameters.AddWithValue("@size", animal.Size ?? (object)DBNull.Value);
+                        cmd.Parameters.AddWithValue("@temperament", animal.Temperament ?? (object)DBNull.Value);
+
+                        cmd.ExecuteNonQuery();
+                        return true;
+                    }
+                }
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        public List<Enclosure> GetAllEnclosures()
+        {
+            var enclosures = new List<Enclosure>();
+            try
+            {
+                using (var conn = DatabaseHelper.GetConnection())
+                {
+                    conn.Open();
+                    var query = "SELECT * FROM Enclosure";
+                    using (var cmd = new NpgsqlCommand(query, conn))
+                    using (var reader = cmd.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            enclosures.Add(new Enclosure
+                            {
+                                Id = reader.GetInt32(0),
+                                Name = reader.GetString(1),
+                                Type = reader.IsDBNull(2) ? null : reader.GetString(2),
+                                Capacity = reader.IsDBNull(3) ? (int?)null : reader.GetInt32(3),
+                                Location = reader.IsDBNull(4) ? null : reader.GetString(4)
+                            });
+                        }
+                    }
+                }
+            }
+            catch { }
+            return enclosures;
+        }
+
         private Animal MapAnimal(NpgsqlDataReader reader)
         {
             return new Animal

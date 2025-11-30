@@ -101,6 +101,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
+    <Page Include="Pages\AddAnimalPage.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="Pages\AdminPage.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -144,6 +148,9 @@
     <Compile Include="Models\ShelterEmployee.cs" />
     <Compile Include="Models\User.cs" />
     <Compile Include="Models\Veterinarian.cs" />
+    <Compile Include="Pages\AddAnimalPage.xaml.cs">
+      <DependentUpon>AddAnimalPage.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Pages\AdminPage.xaml.cs">
       <DependentUpon>AdminPage.xaml</DependentUpon>
     </Compile>
