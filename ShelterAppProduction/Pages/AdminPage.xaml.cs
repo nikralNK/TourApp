@@ -1,5 +1,6 @@
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
 using ShelterAppProduction.Repositories;
 using ShelterAppProduction.Services;
 
@@ -8,6 +9,7 @@ namespace ShelterAppProduction.Pages
     public partial class AdminPage : Page
     {
         private ApplicationRepository applicationRepository = new ApplicationRepository();
+        private AnimalRepository animalRepository = new AnimalRepository();
 
         public AdminPage()
         {
@@ -75,6 +77,35 @@ namespace ShelterAppProduction.Pages
                 LoadApplications();
                 MessageBox.Show("Заявка отклонена", "Успех", MessageBoxButton.OK, MessageBoxImage.Information);
             }
+        }
+
+        private void AnimalId_MouseEnter(object sender, MouseEventArgs e)
+        {
+            var textBlock = sender as TextBlock;
+            if (textBlock != null && textBlock.Tag != null)
+            {
+                var animalId = (int)textBlock.Tag;
+                var animal = animalRepository.GetById(animalId);
+
+                if (animal != null)
+                {
+                    PopupAnimalName.Text = $"Кличка: {animal.Name}";
+                    PopupAnimalType.Text = $"Тип: {animal.Type ?? "Не указано"}";
+                    PopupAnimalBreed.Text = $"Порода: {animal.Breed ?? "Не указано"}";
+                    PopupAnimalGender.Text = $"Пол: {animal.Gender ?? "Не указано"}";
+                    PopupAnimalAge.Text = $"Возраст: {animal.Age} лет";
+                    PopupAnimalSize.Text = $"Размер: {animal.Size ?? "Не указано"}";
+                    PopupAnimalTemperament.Text = $"Темперамент: {animal.Temperament ?? "Не указано"}";
+                    PopupAnimalStatus.Text = $"Статус: {animal.CurrentStatus}";
+
+                    AnimalInfoPopup.IsOpen = true;
+                }
+            }
+        }
+
+        private void AnimalId_MouseLeave(object sender, MouseEventArgs e)
+        {
+            AnimalInfoPopup.IsOpen = false;
         }
     }
 }

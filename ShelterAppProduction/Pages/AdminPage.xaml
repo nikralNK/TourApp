@@ -38,7 +38,17 @@
                          Margin="0,10,0,0">
                     <DataGrid.Columns>
                         <DataGridTextColumn Header="ID" Binding="{Binding Id}" Width="50" IsReadOnly="True"/>
-                        <DataGridTextColumn Header="ID Животного" Binding="{Binding IdAnimal}" Width="120" IsReadOnly="True"/>
+                        <DataGridTemplateColumn Header="ID Животного" Width="120">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding IdAnimal}"
+                                              MouseEnter="AnimalId_MouseEnter"
+                                              MouseLeave="AnimalId_MouseLeave"
+                                              Tag="{Binding IdAnimal}"
+                                              Cursor="Hand"/>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
                         <DataGridTextColumn Header="ID Опекуна" Binding="{Binding IdGuardian}" Width="120" IsReadOnly="True"/>
                         <DataGridTextColumn Header="Дата заявки" Binding="{Binding ApplicationDate, StringFormat='dd.MM.yyyy HH:mm'}" Width="150" IsReadOnly="True"/>
                         <DataGridTextColumn Header="Статус" Binding="{Binding Status}" Width="120"/>
@@ -85,5 +95,32 @@
                 </DataGrid>
             </StackPanel>
         </Border>
+
+        <Popup x:Name="AnimalInfoPopup"
+               PlacementTarget="{Binding ElementName=ApplicationsDataGrid}"
+               Placement="Mouse"
+               AllowsTransparency="True"
+               StaysOpen="True">
+            <Border Background="White"
+                    BorderBrush="{StaticResource PrimaryGreen}"
+                    BorderThickness="2"
+                    CornerRadius="8"
+                    Padding="15"
+                    MaxWidth="400">
+                <Border.Effect>
+                    <DropShadowEffect BlurRadius="10" ShadowDepth="3" Opacity="0.3"/>
+                </Border.Effect>
+                <StackPanel>
+                    <TextBlock x:Name="PopupAnimalName" FontWeight="Bold" FontSize="16" Margin="0,0,0,10"/>
+                    <TextBlock x:Name="PopupAnimalType" Margin="0,0,0,5"/>
+                    <TextBlock x:Name="PopupAnimalBreed" Margin="0,0,0,5"/>
+                    <TextBlock x:Name="PopupAnimalGender" Margin="0,0,0,5"/>
+                    <TextBlock x:Name="PopupAnimalAge" Margin="0,0,0,5"/>
+                    <TextBlock x:Name="PopupAnimalSize" Margin="0,0,0,5"/>
+                    <TextBlock x:Name="PopupAnimalTemperament" Margin="0,0,0,5"/>
+                    <TextBlock x:Name="PopupAnimalStatus" Margin="0,0,0,5"/>
+                </StackPanel>
+            </Border>
+        </Popup>
     </Grid>
 </Page>
