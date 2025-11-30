@@ -208,7 +208,8 @@ namespace ShelterAppProduction.Pages
                 Notes = string.IsNullOrWhiteSpace(NotesTextBox.Text) ? null : NotesTextBox.Text.Trim()
             };
 
-            if (medicalRecordRepository.AddMedicalRecord(record))
+            string errorMessage;
+            if (medicalRecordRepository.AddMedicalRecord(record, out errorMessage))
             {
                 MedicalRecordStatusTextBlock.Foreground = System.Windows.Media.Brushes.Green;
                 MedicalRecordStatusTextBlock.Text = "Запись успешно добавлена!";
@@ -222,7 +223,7 @@ namespace ShelterAppProduction.Pages
             }
             else
             {
-                MedicalRecordStatusTextBlock.Text = "Ошибка при сохранении записи";
+                MedicalRecordStatusTextBlock.Text = $"Ошибка при сохранении записи: {errorMessage}";
             }
         }
     }

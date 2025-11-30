@@ -65,8 +65,9 @@ namespace ShelterAppProduction.Repositories
             }
         }
 
-        public bool AddMedicalRecord(MedicalRecord record)
+        public bool AddMedicalRecord(MedicalRecord record, out string errorMessage)
         {
+            errorMessage = null;
             try
             {
                 using (var conn = DatabaseHelper.GetConnection())
@@ -87,8 +88,9 @@ namespace ShelterAppProduction.Repositories
                     }
                 }
             }
-            catch
+            catch (Exception ex)
             {
+                errorMessage = ex.Message;
                 return false;
             }
         }
