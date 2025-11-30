@@ -28,7 +28,8 @@ namespace ShelterAppProduction.Repositories
                                 FullName = reader.GetString(1),
                                 Specialization = reader.IsDBNull(2) ? null : reader.GetString(2),
                                 PhoneNumber = reader.IsDBNull(3) ? null : reader.GetString(3),
-                                LicenseNumber = reader.IsDBNull(4) ? null : reader.GetString(4)
+                                LicenseNumber = reader.IsDBNull(4) ? null : reader.GetString(4),
+                                UserId = reader.IsDBNull(5) ? (int?)null : reader.GetInt32(5)
                             });
                         }
                     }
@@ -59,7 +60,8 @@ namespace ShelterAppProduction.Repositories
                                     FullName = reader.GetString(1),
                                     Specialization = reader.IsDBNull(2) ? null : reader.GetString(2),
                                     PhoneNumber = reader.IsDBNull(3) ? null : reader.GetString(3),
-                                    LicenseNumber = reader.IsDBNull(4) ? null : reader.GetString(4)
+                                    LicenseNumber = reader.IsDBNull(4) ? null : reader.GetString(4),
+                                    UserId = reader.IsDBNull(5) ? (int?)null : reader.GetInt32(5)
                                 };
                             }
                         }
@@ -77,14 +79,15 @@ namespace ShelterAppProduction.Repositories
                 using (var conn = DatabaseHelper.GetConnection())
                 {
                     conn.Open();
-                    var query = @"INSERT INTO Veterinarian (FullName, Specialization, PhoneNumber, LicenseNumber)
-                                  VALUES (@fullName, @specialization, @phoneNumber, @licenseNumber)";
+                    var query = @"INSERT INTO Veterinarian (FullName, Specialization, PhoneNumber, LicenseNumber, UserId)
+                                  VALUES (@fullName, @specialization, @phoneNumber, @licenseNumber, @userId)";
                     using (var cmd = new NpgsqlCommand(query, conn))
                     {
                         cmd.Parameters.AddWithValue("@fullName", veterinarian.FullName);
                         cmd.Parameters.AddWithValue("@specialization", veterinarian.Specialization ?? (object)DBNull.Value);
                         cmd.Parameters.AddWithValue("@phoneNumber", veterinarian.PhoneNumber ?? (object)DBNull.Value);
                         cmd.Parameters.AddWithValue("@licenseNumber", veterinarian.LicenseNumber ?? (object)DBNull.Value);
+                        cmd.Parameters.AddWithValue("@userId", veterinarian.UserId.HasValue ? (object)veterinarian.UserId.Value : DBNull.Value);
                         cmd.ExecuteNonQuery();
                         return true;
                     }
@@ -104,7 +107,7 @@ namespace ShelterAppProduction.Repositories
                 {
                     conn.Open();
                     var query = @"UPDATE Veterinarian SET FullName = @fullName, Specialization = @specialization,
-                                  PhoneNumber = @phoneNumber, LicenseNumber = @licenseNumber WHERE Id = @id";
+                                  PhoneNumber = @phoneNumber, LicenseNumber = @licenseNumber, UserId = @userId WHERE Id = @id";
                     using (var cmd = new NpgsqlCommand(query, conn))
                     {
                         cmd.Parameters.AddWithValue("@id", veterinarian.Id);
@@ -112,6 +115,7 @@ namespace ShelterAppProduction.Repositories
                         cmd.Parameters.AddWithValue("@specialization", veterinarian.Specialization ?? (object)DBNull.Value);
                         cmd.Parameters.AddWithValue("@phoneNumber", veterinarian.PhoneNumber ?? (object)DBNull.Value);
                         cmd.Parameters.AddWithValue("@licenseNumber", veterinarian.LicenseNumber ?? (object)DBNull.Value);
+                        cmd.Parameters.AddWithValue("@userId", veterinarian.UserId.HasValue ? (object)veterinarian.UserId.Value : DBNull.Value);
                         cmd.ExecuteNonQuery();
                         return true;
                     }

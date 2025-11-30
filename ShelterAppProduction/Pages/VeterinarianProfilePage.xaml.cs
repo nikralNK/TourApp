@@ -2,6 +2,7 @@ using System.Windows;
 using System.Windows.Controls;
 using ShelterAppProduction.Models;
 using ShelterAppProduction.Repositories;
+using ShelterAppProduction.Services;
 
 namespace ShelterAppProduction.Pages
 {
@@ -52,6 +53,21 @@ namespace ShelterAppProduction.Pages
                 return;
             }
 
+            if (!veterinarianId.HasValue)
+            {
+                if (string.IsNullOrWhiteSpace(UsernameTextBox.Text))
+                {
+                    StatusTextBlock.Text = "Введите логин";
+                    return;
+                }
+
+                if (string.IsNullOrWhiteSpace(PasswordBox.Password))
+                {
+                    StatusTextBlock.Text = "Введите пароль";
+                    return;
+                }
+            }
+
             var veterinarian = new Veterinarian
             {
                 FullName = FullNameTextBox.Text.Trim(),
@@ -68,7 +84,19 @@ namespace ShelterAppProduction.Pages
             }
             else
             {
-                success = veterinarianRepository.AddVeterinarian(veterinarian);
+                var authService = new AuthService();
+                var userId = authService.RegisterUser(UsernameTextBox.Text.Trim(), PasswordBox.Password, FullNameTextBox.Text.Trim(), "veterinarian");
+
+                if (userId.HasValue)
+                {
+                    veterinarian.UserId = userId.Value;
+                    success = veterinarianRepository.AddVeterinarian(veterinarian);
+                }
+                else
+                {
+                    StatusTextBlock.Text = "Ошибка при создании учетной записи. Возможно, логин уже занят";
+                    return;
+                }
             }
 
             if (success)

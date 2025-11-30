@@ -9,5 +9,6 @@ namespace ShelterAppProduction.Models
         public string Specialization { get; set; }
         public string PhoneNumber { get; set; }
         public string LicenseNumber { get; set; }
+        public int? UserId { get; set; }
     }
 }

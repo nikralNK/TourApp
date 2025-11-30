@@ -31,6 +31,12 @@
                     <TextBlock Text="Номер лицензии:" Margin="5,15,5,5"/>
                     <TextBox x:Name="LicenseNumberTextBox" Height="40" Margin="5"/>
 
+                    <TextBlock Text="Логин:" Margin="5,15,5,5"/>
+                    <TextBox x:Name="UsernameTextBox" Height="40" Margin="5"/>
+
+                    <TextBlock Text="Пароль:" Margin="5,15,5,5"/>
+                    <PasswordBox x:Name="PasswordBox" Height="40" Margin="5"/>
+
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,30,0,10">
                         <Button x:Name="SaveButton" Content="Сохранить" Click="SaveButton_Click" Width="150" Height="45" Margin="10,0" Background="{StaticResource PrimaryGreen}"/>
                         <Button Content="Отмена" Click="CancelButton_Click" Width="150" Height="45" Margin="10,0" Background="{StaticResource LightGray}" Foreground="{StaticResource DarkGray}"/>
