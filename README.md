@@ -93,7 +93,7 @@ psql -U postgres -d shelter_db -f ShelterAppProduction/Database/insert_test_data
 - **Backend**: C# .NET Framework 4.7.2
 - **Database**: PostgreSQL 12+
 - **ORM**: Npgsql 4.1.14 (ADO.NET)
-- **Security**: BCrypt.Net-Next 4.0.3
+- **Security**: BCrypt.Net-Next 4.0.2
 
 ## Дизайн
 

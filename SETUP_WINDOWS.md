@@ -6,19 +6,48 @@
 
 Это происходит из-за того, что NuGet пакеты не были восстановлены.
 
-**Решение:**
+**Решение (Шаг за шагом):**
 
-1. Откройте Solution в Visual Studio
-2. Кликните правой кнопкой на Solution (ShelterAppProduction) в Solution Explorer
-3. Выберите "Restore NuGet Packages"
-4. Дождитесь завершения загрузки пакетов
-5. Пересоберите проект (Build → Rebuild Solution)
+1. **Закройте Visual Studio** (если открыт)
 
-**Альтернативный способ через Package Manager Console:**
+2. **Удалите старые пакеты и кэш:**
+   - Удалите папку `packages` в корне решения (если существует)
+   - Удалите папки `bin` и `obj` внутри `ShelterAppProduction`
+   - Очистите NuGet кэш через командную строку:
+     ```cmd
+     nuget locals all -clear
+     ```
+     Или:
+     ```cmd
+     dotnet nuget locals all --clear
+     ```
 
-```powershell
-Update-Package -reinstall
-```
+3. **Откройте Visual Studio** и откройте Solution
+
+4. **Восстановите пакеты:**
+   - Tools → NuGet Package Manager → Package Manager Console
+   - Выполните команды:
+     ```powershell
+     Update-Package -reinstall
+     ```
+
+   Или через GUI:
+   - Правой кнопкой на Solution → Restore NuGet Packages
+   - Дождитесь завершения (смотрите Output окно)
+
+5. **Пересоберите решение:**
+   - Build → Clean Solution
+   - Build → Rebuild Solution
+
+6. **Если проблема не решилась:**
+   - Откройте: Tools → NuGet Package Manager → Manage NuGet Packages for Solution
+   - Перейдите на вкладку "Installed"
+   - Найдите BCrypt.Net-Next
+   - Нажмите "Uninstall"
+   - Перейдите на вкладку "Browse"
+   - Найдите "BCrypt.Net-Next"
+   - Установите версию **4.0.2** (не 4.0.3!)
+   - Нажмите Install и выберите проект ShelterAppProduction
 
 ---
 
