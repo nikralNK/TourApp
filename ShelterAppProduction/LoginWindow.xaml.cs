@@ -29,7 +29,6 @@ namespace ShelterAppProduction
 
             if (user != null)
             {
-                MessageBox.Show($"Вход выполнен. Роль: '{user.Role}', IsAdmin: {SessionManager.IsAdmin}", "Отладка", MessageBoxButton.OK, MessageBoxImage.Information);
                 var mainWindow = new MainWindow();
                 mainWindow.Show();
                 this.Close();

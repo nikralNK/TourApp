@@ -15,14 +15,10 @@ namespace ShelterAppProduction
             {
                 UserNameTextBlock.Text = $"Добро пожаловать, {SessionManager.CurrentUser.FullName ?? SessionManager.CurrentUser.Username}";
 
-                MessageBox.Show($"Роль: '{SessionManager.CurrentUser.Role}'\nДлина: {SessionManager.CurrentUser.Role?.Length}\nIsAdmin: {SessionManager.IsAdmin}", "Отладка MainWindow");
-
                 if (SessionManager.IsAdmin)
                 {
-                    MessageBox.Show("Устанавливаем видимость кнопок администратора", "Отладка");
                     AdminButton.Visibility = Visibility.Visible;
                     VeterinarianButton.Visibility = Visibility.Visible;
-                    MessageBox.Show($"AdminButton.Visibility = {AdminButton.Visibility}\nVeterinarianButton.Visibility = {VeterinarianButton.Visibility}", "Отладка после установки");
                 }
             }
 

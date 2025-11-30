@@ -20,8 +20,8 @@
                     <Button Content="Каталог" Click="CatalogButton_Click" Margin="5"/>
                     <Button Content="Избранное" Click="FavoritesButton_Click" Margin="5"/>
                     <Button Content="Профиль" Click="ProfileButton_Click" Margin="5"/>
-                    <Button x:Name="AdminButton" Content="Админ-панель" Click="AdminButton_Click" Margin="5" Visibility="Collapsed" Background="Red" Width="150" Height="40"/>
-                    <Button x:Name="VeterinarianButton" Content="Ветеринары" Click="VeterinarianButton_Click" Margin="5" Visibility="Collapsed" Background="Orange" Width="150" Height="40"/>
+                    <Button x:Name="AdminButton" Content="Админ-панель" Click="AdminButton_Click" Margin="5" Visibility="Collapsed" Width="150"/>
+                    <Button x:Name="VeterinarianButton" Content="Ветеринары" Click="VeterinarianButton_Click" Margin="5" Visibility="Collapsed" Width="150"/>
                 </StackPanel>
 
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
