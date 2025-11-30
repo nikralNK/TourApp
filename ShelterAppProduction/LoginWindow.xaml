@@ -55,16 +55,8 @@
                           Text=""
                           Foreground="Red"
                           HorizontalAlignment="Center"
-                          Margin="10,10,10,5"
+                          Margin="10,10,10,10"
                           TextWrapping="Wrap"/>
-
-                <TextBlock Text="Тестовые данные: admin/admin или user1/user1"
-                          FontSize="11"
-                          Foreground="Gray"
-                          HorizontalAlignment="Center"
-                          Margin="10,5,10,10"
-                          TextWrapping="Wrap"
-                          TextAlignment="Center"/>
             </StackPanel>
         </Border>
     </Grid>
