@@ -31,11 +31,15 @@
                     <TextBlock Text="Номер лицензии:" Margin="5,15,5,5"/>
                     <TextBox x:Name="LicenseNumberTextBox" Height="40" Margin="5"/>
 
-                    <TextBlock Text="Логин:" Margin="5,15,5,5"/>
-                    <TextBox x:Name="UsernameTextBox" Height="40" Margin="5"/>
+                    <StackPanel x:Name="AccountPanel" Margin="0,15,0,0">
+                        <TextBlock x:Name="AccountStatusTextBlock" Text="" Foreground="Gray" Margin="5,0,5,10" FontWeight="Bold"/>
 
-                    <TextBlock Text="Пароль:" Margin="5,15,5,5"/>
-                    <PasswordBox x:Name="PasswordBox" Height="40" Margin="5"/>
+                        <TextBlock x:Name="UsernameLabel" Text="Логин:" Margin="5,0,5,5"/>
+                        <TextBox x:Name="UsernameTextBox" Height="40" Margin="5"/>
+
+                        <TextBlock x:Name="PasswordLabel" Text="Пароль:" Margin="5,15,5,5"/>
+                        <PasswordBox x:Name="PasswordBox" Height="40" Margin="5"/>
+                    </StackPanel>
 
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,30,0,10">
                         <Button x:Name="SaveButton" Content="Сохранить" Click="SaveButton_Click" Width="150" Height="45" Margin="10,0" Background="{StaticResource PrimaryGreen}"/>

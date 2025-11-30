@@ -38,6 +38,19 @@ namespace ShelterAppProduction.Pages
                     SpecializationTextBox.Text = veterinarian.Specialization ?? "";
                     PhoneNumberTextBox.Text = veterinarian.PhoneNumber ?? "";
                     LicenseNumberTextBox.Text = veterinarian.LicenseNumber ?? "";
+
+                    if (veterinarian.UserId.HasValue)
+                    {
+                        AccountStatusTextBlock.Text = "✓ Учетная запись создана";
+                        AccountStatusTextBlock.Foreground = System.Windows.Media.Brushes.Green;
+                        AccountPanel.Visibility = Visibility.Collapsed;
+                    }
+                    else
+                    {
+                        AccountStatusTextBlock.Text = "⚠ Учетная запись не создана. Заполните поля ниже для создания.";
+                        AccountStatusTextBlock.Foreground = System.Windows.Media.Brushes.Orange;
+                        AccountPanel.Visibility = Visibility.Visible;
+                    }
                 }
             }
         }
@@ -53,7 +66,8 @@ namespace ShelterAppProduction.Pages
                 return;
             }
 
-            if (!veterinarianId.HasValue)
+            bool needCreateAccount = false;
+            if (!veterinarianId.HasValue || (veterinarianId.HasValue && AccountPanel.Visibility == Visibility.Visible))
             {
                 if (string.IsNullOrWhiteSpace(UsernameTextBox.Text))
                 {
@@ -66,6 +80,7 @@ namespace ShelterAppProduction.Pages
                     StatusTextBlock.Text = "Введите пароль";
                     return;
                 }
+                needCreateAccount = true;
             }
 
             var veterinarian = new Veterinarian
@@ -80,6 +95,25 @@ namespace ShelterAppProduction.Pages
             if (veterinarianId.HasValue)
             {
                 veterinarian.Id = veterinarianId.Value;
+                var existingVet = veterinarianRepository.GetById(veterinarianId.Value);
+                veterinarian.UserId = existingVet.UserId;
+
+                if (needCreateAccount)
+                {
+                    var authService = new AuthService();
+                    var userId = authService.RegisterUser(UsernameTextBox.Text.Trim(), PasswordBox.Password, FullNameTextBox.Text.Trim(), "veterinarian");
+
+                    if (userId.HasValue)
+                    {
+                        veterinarian.UserId = userId.Value;
+                    }
+                    else
+                    {
+                        StatusTextBlock.Text = "Ошибка при создании учетной записи. Возможно, логин уже занят";
+                        return;
+                    }
+                }
+
                 success = veterinarianRepository.UpdateVeterinarian(veterinarian);
             }
             else
