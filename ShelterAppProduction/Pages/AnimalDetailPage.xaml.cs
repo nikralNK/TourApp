@@ -64,6 +64,10 @@ namespace ShelterAppProduction.Pages
                 if (SessionManager.IsAuthenticated && (SessionManager.CurrentUser.Role == "admin" || SessionManager.CurrentUser.Role == "veterinarian"))
                 {
                     ApplicationBorder.Visibility = Visibility.Collapsed;
+                }
+
+                if (SessionManager.IsAuthenticated && SessionManager.CurrentUser.Role == "veterinarian")
+                {
                     AddRecordBorder.Visibility = Visibility.Visible;
                 }
             }
@@ -186,21 +190,13 @@ namespace ShelterAppProduction.Pages
                 return;
             }
 
-            int veterinarianId;
-            if (SessionManager.CurrentUser.Role == "admin")
+            var vetId = medicalRecordRepository.GetVeterinarianIdByUserId(SessionManager.CurrentUser.Id);
+            if (!vetId.HasValue)
             {
-                veterinarianId = 0;
+                MedicalRecordStatusTextBlock.Text = "Ошибка: у вас нет профиля ветеринара. Только ветеринары могут добавлять записи.";
+                return;
             }
-            else
-            {
-                var vetId = medicalRecordRepository.GetVeterinarianIdByUserId(SessionManager.CurrentUser.Id);
-                if (!vetId.HasValue)
-                {
-                    MedicalRecordStatusTextBlock.Text = "Ошибка: не удалось определить ID ветеринара";
-                    return;
-                }
-                veterinarianId = vetId.Value;
-            }
+            int veterinarianId = vetId.Value;
 
             var record = new MedicalRecord
             {
