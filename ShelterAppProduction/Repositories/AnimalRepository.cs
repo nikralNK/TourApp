@@ -134,6 +134,41 @@ namespace ShelterAppProduction.Repositories
             }
         }
 
+        public bool UpdateAnimal(Animal animal)
+        {
+            try
+            {
+                using (var conn = DatabaseHelper.GetConnection())
+                {
+                    conn.Open();
+                    var query = @"UPDATE Animal SET Name = @name, Type = @type, Breed = @breed, DateOfBirth = @dateOfBirth,
+                                  IdEnclosure = @idEnclosure, CurrentStatus = @currentStatus, Gender = @gender,
+                                  Size = @size, Temperament = @temperament, Photo = @photo WHERE Id = @id";
+                    using (var cmd = new NpgsqlCommand(query, conn))
+                    {
+                        cmd.Parameters.AddWithValue("@id", animal.Id);
+                        cmd.Parameters.AddWithValue("@name", animal.Name);
+                        cmd.Parameters.AddWithValue("@type", animal.Type ?? (object)DBNull.Value);
+                        cmd.Parameters.AddWithValue("@breed", animal.Breed ?? (object)DBNull.Value);
+                        cmd.Parameters.AddWithValue("@dateOfBirth", animal.DateOfBirth);
+                        cmd.Parameters.AddWithValue("@idEnclosure", animal.IdEnclosure ?? (object)DBNull.Value);
+                        cmd.Parameters.AddWithValue("@currentStatus", animal.CurrentStatus ?? "Доступен");
+                        cmd.Parameters.AddWithValue("@gender", animal.Gender ?? (object)DBNull.Value);
+                        cmd.Parameters.AddWithValue("@size", animal.Size ?? (object)DBNull.Value);
+                        cmd.Parameters.AddWithValue("@temperament", animal.Temperament ?? (object)DBNull.Value);
+                        cmd.Parameters.AddWithValue("@photo", animal.Photo ?? (object)DBNull.Value);
+
+                        cmd.ExecuteNonQuery();
+                        return true;
+                    }
+                }
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
         public List<Enclosure> GetAllEnclosures()
         {
             var enclosures = new List<Enclosure>();

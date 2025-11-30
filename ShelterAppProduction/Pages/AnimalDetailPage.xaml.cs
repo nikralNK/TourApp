@@ -70,6 +70,11 @@ namespace ShelterAppProduction.Pages
                 {
                     AddRecordBorder.Visibility = Visibility.Visible;
                 }
+
+                if (SessionManager.IsAdmin)
+                {
+                    EditButton.Visibility = Visibility.Visible;
+                }
             }
 
             VisitDatePicker.SelectedDate = DateTime.Now;
@@ -171,6 +176,11 @@ namespace ShelterAppProduction.Pages
                 PhotoImage.Source = bitmap;
             }
             catch { }
+        }
+
+        private void EditButton_Click(object sender, RoutedEventArgs e)
+        {
+            Manager.MainFrame.Navigate(new AddAnimalPage(animal));
         }
 
         private void AddMedicalRecordButton_Click(object sender, RoutedEventArgs e)

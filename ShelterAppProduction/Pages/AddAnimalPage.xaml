@@ -16,7 +16,7 @@
                 <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
 
-            <TextBlock Grid.Row="0" Text="Добавить новое животное" Style="{StaticResource TitleText}"/>
+            <TextBlock x:Name="PageTitle" Grid.Row="0" Text="Добавить новое животное" Style="{StaticResource TitleText}"/>
 
             <Border Grid.Row="1" Style="{StaticResource CardBorder}" Margin="0,20,0,0" MaxWidth="800">
                 <StackPanel>
@@ -82,7 +82,7 @@
                     </Grid>
 
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,30,0,10">
-                        <Button Content="Добавить животное" Click="AddAnimalButton_Click" Width="200" Height="45" Margin="10,0"/>
+                        <Button x:Name="AddAnimalButton" Content="Добавить животное" Click="AddAnimalButton_Click" Width="200" Height="45" Margin="10,0"/>
                         <Button Content="Отмена" Click="CancelButton_Click" Width="150" Height="45" Margin="10,0"
                                 Background="{StaticResource LightGray}" Foreground="{StaticResource DarkGray}"/>
                     </StackPanel>

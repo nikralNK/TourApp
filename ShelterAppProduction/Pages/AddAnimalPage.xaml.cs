@@ -13,11 +13,89 @@ namespace ShelterAppProduction.Pages
     {
         private AnimalRepository animalRepository = new AnimalRepository();
         private string selectedPhotoPath = null;
+        private Animal editingAnimal = null;
 
         public AddAnimalPage()
         {
             InitializeComponent();
             LoadEnclosures();
+        }
+
+        public AddAnimalPage(Animal animal) : this()
+        {
+            editingAnimal = animal;
+            PageTitle.Text = "Редактирование животного";
+            AddAnimalButton.Content = "Сохранить изменения";
+            LoadAnimalData();
+        }
+
+        private void LoadAnimalData()
+        {
+            if (editingAnimal == null) return;
+
+            NameTextBox.Text = editingAnimal.Name;
+            BreedTextBox.Text = editingAnimal.Breed;
+            DateOfBirthPicker.SelectedDate = editingAnimal.DateOfBirth;
+            TemperamentTextBox.Text = editingAnimal.Temperament;
+
+            if (!string.IsNullOrWhiteSpace(editingAnimal.Type))
+            {
+                foreach (ComboBoxItem item in TypeComboBox.Items)
+                {
+                    if (item.Content.ToString() == editingAnimal.Type)
+                    {
+                        TypeComboBox.SelectedItem = item;
+                        break;
+                    }
+                }
+            }
+
+            if (!string.IsNullOrWhiteSpace(editingAnimal.Gender))
+            {
+                foreach (ComboBoxItem item in GenderComboBox.Items)
+                {
+                    if (item.Content.ToString() == editingAnimal.Gender)
+                    {
+                        GenderComboBox.SelectedItem = item;
+                        break;
+                    }
+                }
+            }
+
+            if (!string.IsNullOrWhiteSpace(editingAnimal.Size))
+            {
+                foreach (ComboBoxItem item in SizeComboBox.Items)
+                {
+                    if (item.Content.ToString() == editingAnimal.Size)
+                    {
+                        SizeComboBox.SelectedItem = item;
+                        break;
+                    }
+                }
+            }
+
+            if (!string.IsNullOrWhiteSpace(editingAnimal.CurrentStatus))
+            {
+                foreach (ComboBoxItem item in StatusComboBox.Items)
+                {
+                    if (item.Content.ToString() == editingAnimal.CurrentStatus)
+                    {
+                        StatusComboBox.SelectedItem = item;
+                        break;
+                    }
+                }
+            }
+
+            if (editingAnimal.IdEnclosure.HasValue)
+            {
+                EnclosureComboBox.SelectedValue = editingAnimal.IdEnclosure.Value;
+            }
+
+            if (!string.IsNullOrWhiteSpace(editingAnimal.Photo) && File.Exists(editingAnimal.Photo))
+            {
+                selectedPhotoPath = editingAnimal.Photo;
+                LoadPhoto(editingAnimal.Photo);
+            }
         }
 
         private void LoadEnclosures()
@@ -89,6 +167,7 @@ namespace ShelterAppProduction.Pages
 
             var animal = new Animal
             {
+                Id = editingAnimal?.Id ?? 0,
                 Name = NameTextBox.Text.Trim(),
                 Type = (TypeComboBox.SelectedItem as ComboBoxItem)?.Content.ToString(),
                 Breed = string.IsNullOrWhiteSpace(BreedTextBox.Text) ? null : BreedTextBox.Text.Trim(),
@@ -98,25 +177,44 @@ namespace ShelterAppProduction.Pages
                 Temperament = string.IsNullOrWhiteSpace(TemperamentTextBox.Text) ? null : TemperamentTextBox.Text.Trim(),
                 IdEnclosure = EnclosureComboBox.SelectedValue != null ? (int?)EnclosureComboBox.SelectedValue : null,
                 CurrentStatus = (StatusComboBox.SelectedItem as ComboBoxItem)?.Content.ToString(),
-                Photo = photoPathToSave
+                Photo = photoPathToSave ?? editingAnimal?.Photo
             };
 
             try
             {
-                bool success = animalRepository.AddAnimal(animal);
+                bool success;
+                string message;
+
+                if (editingAnimal != null)
+                {
+                    success = animalRepository.UpdateAnimal(animal);
+                    message = success ? $"Животное '{animal.Name}' успешно обновлено!" : "Ошибка при обновлении животного в базе данных";
+                }
+                else
+                {
+                    success = animalRepository.AddAnimal(animal);
+                    message = success ? $"Животное '{animal.Name}' успешно добавлено!" : "Ошибка при добавлении животного в базу данных";
+                }
 
                 if (success)
                 {
                     StatusTextBlock.Foreground = System.Windows.Media.Brushes.Green;
-                    StatusTextBlock.Text = $"Животное '{animal.Name}' успешно добавлено!";
+                    StatusTextBlock.Text = message;
 
-                    ClearForm();
+                    MessageBox.Show(message, "Успех", MessageBoxButton.OK, MessageBoxImage.Information);
 
-                    MessageBox.Show($"Животное '{animal.Name}' успешно добавлено в базу данных!", "Успех", MessageBoxButton.OK, MessageBoxImage.Information);
+                    if (editingAnimal == null)
+                    {
+                        ClearForm();
+                    }
+                    else
+                    {
+                        Manager.MainFrame.GoBack();
+                    }
                 }
                 else
                 {
-                    StatusTextBlock.Text = "Ошибка при добавлении животного в базу данных";
+                    StatusTextBlock.Text = message;
                 }
             }
             catch (Exception ex)

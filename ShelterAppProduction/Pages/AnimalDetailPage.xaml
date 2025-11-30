@@ -76,6 +76,7 @@
                         </StackPanel>
 
                                 <Button x:Name="FavoriteButton" Content="♡ Добавить в избранное" Click="FavoriteButton_Click" Margin="0,20,0,0" Height="40"/>
+                                <Button x:Name="EditButton" Content="✏ Редактировать" Click="EditButton_Click" Margin="0,10,0,0" Height="40" Visibility="Collapsed" Background="{StaticResource PrimaryGreen}"/>
                             </StackPanel>
                         </Border>
 
