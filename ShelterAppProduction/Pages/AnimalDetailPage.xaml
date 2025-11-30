@@ -82,21 +82,22 @@
 
                         <Border x:Name="ApplicationBorder" Grid.Column="1" Style="{StaticResource CardBorder}" Margin="10,0,0,0">
                     <StackPanel>
-                        <TextBlock Text="Подать заявку на опекунство" Style="{StaticResource SubtitleText}"/>
+                        <StackPanel x:Name="ApplicationFormPanel">
+                            <TextBlock Text="Подать заявку на опекунство" Style="{StaticResource SubtitleText}"/>
 
-                        <TextBlock Text="Полное имя:" Margin="0,10,0,0"/>
-                        <TextBox x:Name="FullNameTextBox" Height="40"/>
+                            <TextBlock Text="Полное имя:" Margin="0,10,0,0"/>
+                            <TextBox x:Name="FullNameTextBox" Height="40"/>
 
-                        <TextBlock Text="Телефон:" Margin="0,10,0,0"/>
-                        <TextBox x:Name="PhoneTextBox" Height="40"/>
+                            <TextBlock Text="Телефон:" Margin="0,10,0,0"/>
+                            <TextBox x:Name="PhoneTextBox" Height="40"/>
 
-                        <TextBlock Text="Email:" Margin="0,10,0,0"/>
-                        <TextBox x:Name="EmailTextBox" Height="40"/>
+                            <TextBlock Text="Email:" Margin="0,10,0,0"/>
+                            <TextBox x:Name="EmailTextBox" Height="40"/>
 
-                        <TextBlock Text="Комментарии:" Margin="0,10,0,0"/>
-                        <TextBox x:Name="CommentsTextBox" Height="100" TextWrapping="Wrap" AcceptsReturn="True"/>
+                            <TextBlock Text="Комментарии:" Margin="0,10,0,0"/>
+                            <TextBox x:Name="CommentsTextBox" Height="100" TextWrapping="Wrap" AcceptsReturn="True"/>
 
-                        <Button Content="Подать заявку" Click="SubmitApplicationButton_Click" Margin="0,20,0,0" Height="45"/>
+                            <Button Content="Подать заявку" Click="SubmitApplicationButton_Click" Margin="0,20,0,0" Height="45"/>
 
                             <TextBlock x:Name="ApplicationStatusTextBlock"
                                       Text=""
@@ -104,6 +105,31 @@
                                       HorizontalAlignment="Center"
                                       Margin="0,10,0,0"
                                       TextWrapping="Wrap"/>
+                        </StackPanel>
+
+                        <StackPanel x:Name="ExistingApplicationPanel" Visibility="Collapsed">
+                            <TextBlock Text="Ваша заявка на опекунство" Style="{StaticResource SubtitleText}"/>
+
+                            <Border Background="#F0F0F0" Padding="15" Margin="0,20,0,0" CornerRadius="5">
+                                <StackPanel>
+                                    <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
+                                        <TextBlock Text="Статус: " FontWeight="Bold" FontSize="16"/>
+                                        <TextBlock x:Name="ApplicationStatusLabel" FontSize="16" FontWeight="Bold"/>
+                                    </StackPanel>
+
+                                    <StackPanel Orientation="Horizontal">
+                                        <TextBlock Text="Дата подачи: " FontWeight="Bold" FontSize="14"/>
+                                        <TextBlock x:Name="ApplicationDateLabel" FontSize="14"/>
+                                    </StackPanel>
+
+                                    <TextBlock Text="Мы свяжемся с вами в ближайшее время."
+                                              Margin="0,15,0,0"
+                                              FontStyle="Italic"
+                                              TextWrapping="Wrap"
+                                              Foreground="Gray"/>
+                                </StackPanel>
+                            </Border>
+                        </StackPanel>
                         </StackPanel>
                     </Border>
                     </Grid>

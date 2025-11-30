@@ -128,5 +128,44 @@ namespace ShelterAppProduction.Repositories
             }
             catch { }
         }
+
+        public Application GetApplicationByEmailAndAnimal(string email, int animalId)
+        {
+            try
+            {
+                using (var conn = DatabaseHelper.GetConnection())
+                {
+                    conn.Open();
+                    var query = @"SELECT a.Id, a.IdAnimal, a.IdGuardian, a.ApplicationDate, a.Status, a.Comments
+                                  FROM Application a
+                                  LEFT JOIN Guardian g ON a.IdGuardian = g.Id
+                                  WHERE g.Email = @email AND a.IdAnimal = @animalId
+                                  ORDER BY a.ApplicationDate DESC
+                                  LIMIT 1";
+                    using (var cmd = new NpgsqlCommand(query, conn))
+                    {
+                        cmd.Parameters.AddWithValue("@email", email);
+                        cmd.Parameters.AddWithValue("@animalId", animalId);
+                        using (var reader = cmd.ExecuteReader())
+                        {
+                            if (reader.Read())
+                            {
+                                return new Application
+                                {
+                                    Id = reader.GetInt32(0),
+                                    IdAnimal = reader.GetInt32(1),
+                                    IdGuardian = reader.GetInt32(2),
+                                    ApplicationDate = reader.GetDateTime(3),
+                                    Status = reader.IsDBNull(4) ? "На рассмотрении" : reader.GetString(4),
+                                    Comments = reader.IsDBNull(5) ? null : reader.GetString(5)
+                                };
+                            }
+                        }
+                    }
+                }
+            }
+            catch { }
+            return null;
+        }
     }
 }

@@ -65,6 +65,10 @@ namespace ShelterAppProduction.Pages
                 {
                     ApplicationBorder.Visibility = Visibility.Collapsed;
                 }
+                else if (SessionManager.IsAuthenticated && !string.IsNullOrWhiteSpace(SessionManager.CurrentUser.Email))
+                {
+                    CheckUserApplication();
+                }
 
                 if (SessionManager.IsAuthenticated && SessionManager.CurrentUser.Role.Equals("veterinarian", StringComparison.OrdinalIgnoreCase))
                 {
@@ -79,6 +83,31 @@ namespace ShelterAppProduction.Pages
 
             VisitDatePicker.SelectedDate = DateTime.Now;
             LoadMedicalRecords();
+        }
+
+        private void CheckUserApplication()
+        {
+            var application = applicationRepository.GetApplicationByEmailAndAnimal(SessionManager.CurrentUser.Email, animalId);
+            if (application != null)
+            {
+                ApplicationFormPanel.Visibility = Visibility.Collapsed;
+                ExistingApplicationPanel.Visibility = Visibility.Visible;
+                ApplicationStatusLabel.Text = application.Status;
+                ApplicationDateLabel.Text = application.ApplicationDate.ToString("dd.MM.yyyy HH:mm");
+
+                if (application.Status == "Одобрена")
+                {
+                    ApplicationStatusLabel.Foreground = System.Windows.Media.Brushes.Green;
+                }
+                else if (application.Status == "Отклонена")
+                {
+                    ApplicationStatusLabel.Foreground = System.Windows.Media.Brushes.Red;
+                }
+                else
+                {
+                    ApplicationStatusLabel.Foreground = System.Windows.Media.Brushes.Orange;
+                }
+            }
         }
 
         private void LoadMedicalRecords()
@@ -155,13 +184,14 @@ namespace ShelterAppProduction.Pages
 
             applicationRepository.CreateApplication(animalId, fullName, phone, email, comments);
 
-            ApplicationStatusTextBlock.Foreground = System.Windows.Media.Brushes.Green;
-            ApplicationStatusTextBlock.Text = "Заявка успешно отправлена! Мы свяжемся с вами в ближайшее время.";
+            MessageBox.Show("Заявка успешно отправлена! Мы свяжемся с вами в ближайшее время.", "Успех", MessageBoxButton.OK, MessageBoxImage.Information);
 
             FullNameTextBox.Clear();
             PhoneTextBox.Clear();
             EmailTextBox.Clear();
             CommentsTextBox.Clear();
+
+            CheckUserApplication();
         }
 
         private void LoadPhoto(string path)
