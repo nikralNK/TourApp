@@ -1,7 +1,8 @@
+DELETE FROM Users WHERE Username IN ('admin', 'user1');
+
 INSERT INTO Users (Username, PasswordHash, Email, FullName, Role) VALUES
 ('admin', '$2a$11$xGqWvZ5vJ4KJ5vZ5vZ5vZ.vZ5vZ5vZ5vZ5vZ5vZ5vZ5vZ5vZ5vZ5u', 'admin@shelter.com', 'Администратор', 'Admin'),
-('user1', '$2a$11$xGqWvZ5vJ4KJ5vZ5vZ5vZ.vZ5vZ5vZ5vZ5vZ5vZ5vZ5vZ5vZ5vZ5u', 'user1@shelter.com', 'Пользователь 1', 'User')
-ON CONFLICT (Username) DO NOTHING;
+('user1', '$2a$11$xGqWvZ5vJ4KJ5vZ5vZ5vZ.vZ5vZ5vZ5vZ5vZ5vZ5vZ5vZ5vZ5vZ5u', 'user1@shelter.com', 'Пользователь 1', 'User');
 
 INSERT INTO Enclosure (Name, Type, Capacity, Location) VALUES
 ('Вольер А1', 'Для собак', 10, 'Северный корпус'),
