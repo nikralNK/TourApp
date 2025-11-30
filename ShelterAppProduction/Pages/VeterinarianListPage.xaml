@@ -1,0 +1,61 @@
+<Page x:Class="ShelterAppProduction.Pages.VeterinarianListPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+      xmlns:local="clr-namespace:ShelterAppProduction.Pages"
+      mc:Ignorable="d"
+      d:DesignHeight="600" d:DesignWidth="1200"
+      Background="{StaticResource LightBeige}">
+
+    <ScrollViewer VerticalScrollBarVisibility="Auto">
+        <Grid Margin="20">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+
+            <TextBlock Grid.Row="0" Text="Ветеринары" Style="{StaticResource TitleText}"/>
+
+            <Button Grid.Row="1" Content="+ Добавить ветеринара" Click="AddVeterinarianButton_Click"
+                    Width="200" Height="40" Margin="0,20,0,20" HorizontalAlignment="Left"
+                    Background="{StaticResource PrimaryGreen}"/>
+
+            <Border Grid.Row="2" Style="{StaticResource CardBorder}">
+                <DataGrid x:Name="VeterinariansDataGrid"
+                          AutoGenerateColumns="False"
+                          IsReadOnly="True"
+                          SelectionMode="Single"
+                          CanUserAddRows="False"
+                          CanUserDeleteRows="False"
+                          GridLinesVisibility="Horizontal"
+                          HeadersVisibility="Column"
+                          Background="White"
+                          RowBackground="White"
+                          AlternatingRowBackground="{StaticResource LightBeige}">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="ID" Binding="{Binding Id}" Width="50"/>
+                        <DataGridTextColumn Header="ФИО" Binding="{Binding FullName}" Width="*"/>
+                        <DataGridTextColumn Header="Специализация" Binding="{Binding Specialization}" Width="*"/>
+                        <DataGridTextColumn Header="Телефон" Binding="{Binding PhoneNumber}" Width="150"/>
+                        <DataGridTextColumn Header="Лицензия" Binding="{Binding LicenseNumber}" Width="150"/>
+                        <DataGridTemplateColumn Header="Действия" Width="250">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                                        <Button Content="Редактировать" Click="EditButton_Click" Tag="{Binding Id}"
+                                                Width="120" Margin="5" Height="30"/>
+                                        <Button Content="Удалить" Click="DeleteButton_Click" Tag="{Binding Id}"
+                                                Width="80" Margin="5" Height="30"
+                                                Background="#FFE57373" Foreground="White"/>
+                                    </StackPanel>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                    </DataGrid.Columns>
+                </DataGrid>
+            </Border>
+        </Grid>
+    </ScrollViewer>
+</Page>

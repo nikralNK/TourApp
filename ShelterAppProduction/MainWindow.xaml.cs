@@ -18,6 +18,7 @@ namespace ShelterAppProduction
                 if (SessionManager.IsAdmin)
                 {
                     AdminButton.Visibility = Visibility.Visible;
+                    VeterinarianButton.Visibility = Visibility.Visible;
                 }
             }
 
@@ -42,6 +43,11 @@ namespace ShelterAppProduction
         private void AdminButton_Click(object sender, RoutedEventArgs e)
         {
             MainFrame.Navigate(new AdminPage());
+        }
+
+        private void VeterinarianButton_Click(object sender, RoutedEventArgs e)
+        {
+            MainFrame.Navigate(new VeterinarianListPage());
         }
 
         private void LogoutButton_Click(object sender, RoutedEventArgs e)

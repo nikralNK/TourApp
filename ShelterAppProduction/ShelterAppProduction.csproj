@@ -129,6 +129,14 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
+    <Page Include="Pages\VeterinarianListPage.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Pages\VeterinarianProfilePage.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
@@ -174,10 +182,17 @@
     <Compile Include="Pages\ProfilePage.xaml.cs">
       <DependentUpon>ProfilePage.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Pages\VeterinarianListPage.xaml.cs">
+      <DependentUpon>VeterinarianListPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Pages\VeterinarianProfilePage.xaml.cs">
+      <DependentUpon>VeterinarianProfilePage.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Repositories\AnimalRepository.cs" />
     <Compile Include="Repositories\ApplicationRepository.cs" />
     <Compile Include="Repositories\FavoriteRepository.cs" />
     <Compile Include="Repositories\GuardianRepository.cs" />
+    <Compile Include="Repositories\VeterinarianRepository.cs" />
     <Compile Include="Services\AuthService.cs" />
     <Compile Include="Services\SessionManager.cs" />
   </ItemGroup>
