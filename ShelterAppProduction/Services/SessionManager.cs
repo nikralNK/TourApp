@@ -6,6 +6,6 @@ namespace ShelterAppProduction.Services
     {
         public static User CurrentUser { get; set; }
         public static bool IsAuthenticated => CurrentUser != null;
-        public static bool IsAdmin => CurrentUser != null && CurrentUser.Role == "admin";
+        public static bool IsAdmin => CurrentUser != null && CurrentUser.Role != null && CurrentUser.Role.Equals("admin", System.StringComparison.OrdinalIgnoreCase);
     }
 }

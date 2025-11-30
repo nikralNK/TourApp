@@ -61,12 +61,12 @@ namespace ShelterAppProduction.Pages
                     FavoriteButton.Content = "♥ Удалить из избранного";
                 }
 
-                if (SessionManager.IsAuthenticated && (SessionManager.CurrentUser.Role == "admin" || SessionManager.CurrentUser.Role == "veterinarian"))
+                if (SessionManager.IsAuthenticated && (SessionManager.CurrentUser.Role.Equals("admin", StringComparison.OrdinalIgnoreCase) || SessionManager.CurrentUser.Role.Equals("veterinarian", StringComparison.OrdinalIgnoreCase)))
                 {
                     ApplicationBorder.Visibility = Visibility.Collapsed;
                 }
 
-                if (SessionManager.IsAuthenticated && SessionManager.CurrentUser.Role == "veterinarian")
+                if (SessionManager.IsAuthenticated && SessionManager.CurrentUser.Role.Equals("veterinarian", StringComparison.OrdinalIgnoreCase))
                 {
                     AddRecordBorder.Visibility = Visibility.Visible;
                 }
