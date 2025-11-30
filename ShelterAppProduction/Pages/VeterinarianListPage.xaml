@@ -33,7 +33,8 @@
                           HeadersVisibility="Column"
                           Background="White"
                           RowBackground="White"
-                          AlternatingRowBackground="{StaticResource LightBeige}">
+                          AlternatingRowBackground="{StaticResource LightBeige}"
+                          RowHeight="50">
                     <DataGrid.Columns>
                         <DataGridTextColumn Header="ID" Binding="{Binding Id}" Width="50"/>
                         <DataGridTextColumn Header="ФИО" Binding="{Binding FullName}" Width="*"/>
