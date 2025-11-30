@@ -62,5 +62,11 @@ namespace ShelterAppProduction
                 ErrorTextBlock.Text = "";
             }
         }
+
+        private void RegisterButton_Click(object sender, RoutedEventArgs e)
+        {
+            var registrationWindow = new RegistrationWindow();
+            registrationWindow.ShowDialog();
+        }
     }
 }

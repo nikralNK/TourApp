@@ -74,5 +74,45 @@ namespace ShelterAppProduction.Services
                 MessageBox.Show($"Ошибка при сбросе пароля: {ex.Message}", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
+
+        public bool Register(string username, string password, string email, string fullName)
+        {
+            try
+            {
+                using (var conn = DatabaseHelper.GetConnection())
+                {
+                    conn.Open();
+
+                    var checkQuery = "SELECT COUNT(*) FROM Users WHERE Username = @username";
+                    using (var checkCmd = new NpgsqlCommand(checkQuery, conn))
+                    {
+                        checkCmd.Parameters.AddWithValue("@username", username);
+                        var count = Convert.ToInt32(checkCmd.ExecuteScalar());
+                        if (count > 0)
+                        {
+                            return false;
+                        }
+                    }
+
+                    var passwordHash = BCrypt.Net.BCrypt.HashPassword(password);
+                    var insertQuery = "INSERT INTO Users (Username, PasswordHash, Email, FullName, Role) VALUES (@username, @passwordHash, @email, @fullName, @role)";
+                    using (var cmd = new NpgsqlCommand(insertQuery, conn))
+                    {
+                        cmd.Parameters.AddWithValue("@username", username);
+                        cmd.Parameters.AddWithValue("@passwordHash", passwordHash);
+                        cmd.Parameters.AddWithValue("@email", email);
+                        cmd.Parameters.AddWithValue("@fullName", fullName);
+                        cmd.Parameters.AddWithValue("@role", "User");
+                        cmd.ExecuteNonQuery();
+                        return true;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Ошибка при регистрации: {ex.Message}", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+                return false;
+            }
+        }
     }
 }
