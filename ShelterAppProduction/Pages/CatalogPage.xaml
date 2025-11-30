@@ -73,7 +73,7 @@
                 </ItemsControl.ItemsPanel>
                 <ItemsControl.ItemTemplate>
                     <DataTemplate>
-                        <Border Style="{StaticResource CardBorder}" Width="280" Height="450" Cursor="Hand" MouseDown="AnimalCard_MouseDown">
+                        <Border Style="{StaticResource CardBorder}" Width="280" Height="500" Cursor="Hand" MouseDown="AnimalCard_MouseDown">
                             <StackPanel>
                                 <Border BorderBrush="{StaticResource LightGray}" BorderThickness="1" Width="260" Height="180" Margin="0,0,0,10" ClipToBounds="True">
                                     <Image Source="{Binding Photo}" Stretch="UniformToFill"/>
