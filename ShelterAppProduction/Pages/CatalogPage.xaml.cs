@@ -28,7 +28,7 @@ namespace ShelterAppProduction.Pages
             size = size == "Все" ? null : size;
 
             var animals = animalRepository.GetFiltered(type, gender, size);
-            AnimalsItemsControl.ItemsSource = animals.Where(a => a.CurrentStatus == "Available");
+            AnimalsItemsControl.ItemsSource = animals.Where(a => a.CurrentStatus == "Доступен");
         }
 
         private void FilterChanged(object sender, SelectionChangedEventArgs e)

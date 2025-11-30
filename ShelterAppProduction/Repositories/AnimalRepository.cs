@@ -117,7 +117,7 @@ namespace ShelterAppProduction.Repositories
                         cmd.Parameters.AddWithValue("@breed", animal.Breed ?? (object)DBNull.Value);
                         cmd.Parameters.AddWithValue("@dateOfBirth", animal.DateOfBirth);
                         cmd.Parameters.AddWithValue("@idEnclosure", animal.IdEnclosure ?? (object)DBNull.Value);
-                        cmd.Parameters.AddWithValue("@currentStatus", animal.CurrentStatus ?? "Available");
+                        cmd.Parameters.AddWithValue("@currentStatus", animal.CurrentStatus ?? "Доступен");
                         cmd.Parameters.AddWithValue("@gender", animal.Gender ?? (object)DBNull.Value);
                         cmd.Parameters.AddWithValue("@size", animal.Size ?? (object)DBNull.Value);
                         cmd.Parameters.AddWithValue("@temperament", animal.Temperament ?? (object)DBNull.Value);
@@ -174,7 +174,7 @@ namespace ShelterAppProduction.Repositories
                 DateOfBirth = reader.IsDBNull(4) ? DateTime.Today : reader.GetDateTime(4),
                 IdEnclosure = reader.IsDBNull(5) ? (int?)null : reader.GetInt32(5),
                 IdGuardian = reader.IsDBNull(6) ? (int?)null : reader.GetInt32(6),
-                CurrentStatus = reader.IsDBNull(7) ? "Available" : reader.GetString(7),
+                CurrentStatus = reader.IsDBNull(7) ? "Доступен" : reader.GetString(7),
                 Gender = reader.IsDBNull(8) ? null : reader.GetString(8),
                 Size = reader.IsDBNull(9) ? null : reader.GetString(9),
                 Temperament = reader.IsDBNull(10) ? null : reader.GetString(10)

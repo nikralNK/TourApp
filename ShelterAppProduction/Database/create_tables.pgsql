@@ -32,7 +32,7 @@ CREATE TABLE IF NOT EXISTS Animal (
     DateOfBirth DATE,
     IdEnclosure INTEGER REFERENCES Enclosure(Id),
     IdGuardian INTEGER REFERENCES Guardian(Id),
-    CurrentStatus VARCHAR(50) DEFAULT 'Available',
+    CurrentStatus VARCHAR(50) DEFAULT 'Доступен',
     Gender VARCHAR(20),
     Size VARCHAR(50),
     Temperament VARCHAR(100)

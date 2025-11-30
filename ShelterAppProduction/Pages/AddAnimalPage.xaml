@@ -68,9 +68,9 @@
 
                             <TextBlock Text="Статус:" Margin="5,10,5,5"/>
                             <ComboBox x:Name="StatusComboBox" Height="40" Margin="5">
-                                <ComboBoxItem Content="Available" IsSelected="True"/>
-                                <ComboBoxItem Content="Adopted"/>
-                                <ComboBoxItem Content="Reserved"/>
+                                <ComboBoxItem Content="Доступен" IsSelected="True"/>
+                                <ComboBoxItem Content="Принят"/>
+                                <ComboBoxItem Content="Зарезервирован"/>
                             </ComboBox>
                         </StackPanel>
                     </Grid>
