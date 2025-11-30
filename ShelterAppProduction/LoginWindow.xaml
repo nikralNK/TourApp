@@ -21,15 +21,17 @@
                           HorizontalAlignment="Center"
                           Margin="0,0,0,20"/>
 
-                <TextBlock Text="Логин:" Margin="10,5,10,0"/>
+                <TextBlock Text="Логин:" Margin="10,10,10,5"/>
                 <TextBox x:Name="UsernameTextBox"
                         Height="40"
-                        Margin="10,5,10,10"/>
+                        Margin="10,0,10,10"
+                        VerticalContentAlignment="Center"/>
 
-                <TextBlock Text="Пароль:" Margin="10,5,10,0"/>
+                <TextBlock Text="Пароль:" Margin="10,5,10,5"/>
                 <PasswordBox x:Name="PasswordBox"
                             Height="40"
-                            Margin="10,5,10,10"/>
+                            Margin="10,0,10,10"
+                            VerticalContentAlignment="Center"/>
 
                 <Button Content="Войти"
                        Click="LoginButton_Click"
