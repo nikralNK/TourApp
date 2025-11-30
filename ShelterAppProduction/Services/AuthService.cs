@@ -2,6 +2,8 @@ using BCrypt.Net;
 using Npgsql;
 using ShelterAppProduction.Database;
 using ShelterAppProduction.Models;
+using System;
+using System.Windows;
 
 namespace ShelterAppProduction.Services
 {
@@ -42,8 +44,9 @@ namespace ShelterAppProduction.Services
                     }
                 }
             }
-            catch
+            catch (Exception ex)
             {
+                MessageBox.Show($"Ошибка при входе: {ex.Message}", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
                 return null;
             }
             return null;
@@ -66,7 +69,10 @@ namespace ShelterAppProduction.Services
                     }
                 }
             }
-            catch { }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Ошибка при сбросе пароля: {ex.Message}", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
     }
 }
