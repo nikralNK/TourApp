@@ -64,9 +64,11 @@ namespace ShelterAppProduction.Pages
                 if (SessionManager.IsAuthenticated && (SessionManager.CurrentUser.Role == "admin" || SessionManager.CurrentUser.Role == "veterinarian"))
                 {
                     ApplicationBorder.Visibility = Visibility.Collapsed;
+                    AddRecordBorder.Visibility = Visibility.Visible;
                 }
             }
 
+            VisitDatePicker.SelectedDate = DateTime.Now;
             LoadMedicalRecords();
         }
 
@@ -165,6 +167,67 @@ namespace ShelterAppProduction.Pages
                 PhotoImage.Source = bitmap;
             }
             catch { }
+        }
+
+        private void AddMedicalRecordButton_Click(object sender, RoutedEventArgs e)
+        {
+            MedicalRecordStatusTextBlock.Text = "";
+            MedicalRecordStatusTextBlock.Foreground = System.Windows.Media.Brushes.Red;
+
+            if (!VisitDatePicker.SelectedDate.HasValue)
+            {
+                MedicalRecordStatusTextBlock.Text = "Выберите дату визита";
+                return;
+            }
+
+            if (string.IsNullOrWhiteSpace(DiagnosisTextBox.Text))
+            {
+                MedicalRecordStatusTextBlock.Text = "Введите диагноз";
+                return;
+            }
+
+            int veterinarianId;
+            if (SessionManager.CurrentUser.Role == "admin")
+            {
+                veterinarianId = 0;
+            }
+            else
+            {
+                var vetId = medicalRecordRepository.GetVeterinarianIdByUserId(SessionManager.CurrentUser.Id);
+                if (!vetId.HasValue)
+                {
+                    MedicalRecordStatusTextBlock.Text = "Ошибка: не удалось определить ID ветеринара";
+                    return;
+                }
+                veterinarianId = vetId.Value;
+            }
+
+            var record = new MedicalRecord
+            {
+                IdAnimal = animalId,
+                IdVeterinarian = veterinarianId,
+                VisitDate = VisitDatePicker.SelectedDate.Value,
+                Diagnosis = DiagnosisTextBox.Text.Trim(),
+                Treatment = string.IsNullOrWhiteSpace(TreatmentTextBox.Text) ? null : TreatmentTextBox.Text.Trim(),
+                Notes = string.IsNullOrWhiteSpace(NotesTextBox.Text) ? null : NotesTextBox.Text.Trim()
+            };
+
+            if (medicalRecordRepository.AddMedicalRecord(record))
+            {
+                MedicalRecordStatusTextBlock.Foreground = System.Windows.Media.Brushes.Green;
+                MedicalRecordStatusTextBlock.Text = "Запись успешно добавлена!";
+
+                DiagnosisTextBox.Clear();
+                TreatmentTextBox.Clear();
+                NotesTextBox.Clear();
+                VisitDatePicker.SelectedDate = DateTime.Now;
+
+                LoadMedicalRecords();
+            }
+            else
+            {
+                MedicalRecordStatusTextBlock.Text = "Ошибка при сохранении записи";
+            }
         }
     }
 }

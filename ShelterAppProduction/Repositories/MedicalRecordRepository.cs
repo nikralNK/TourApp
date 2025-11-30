@@ -64,5 +64,55 @@ namespace ShelterAppProduction.Repositories
                 return "Не указан";
             }
         }
+
+        public bool AddMedicalRecord(MedicalRecord record)
+        {
+            try
+            {
+                using (var conn = DatabaseHelper.GetConnection())
+                {
+                    conn.Open();
+                    var query = @"INSERT INTO MedicalRecord (IdAnimal, IdVeterinarian, VisitDate, Diagnosis, Treatment, Notes)
+                                  VALUES (@idAnimal, @idVeterinarian, @visitDate, @diagnosis, @treatment, @notes)";
+                    using (var cmd = new NpgsqlCommand(query, conn))
+                    {
+                        cmd.Parameters.AddWithValue("@idAnimal", record.IdAnimal);
+                        cmd.Parameters.AddWithValue("@idVeterinarian", record.IdVeterinarian);
+                        cmd.Parameters.AddWithValue("@visitDate", record.VisitDate);
+                        cmd.Parameters.AddWithValue("@diagnosis", record.Diagnosis ?? (object)DBNull.Value);
+                        cmd.Parameters.AddWithValue("@treatment", record.Treatment ?? (object)DBNull.Value);
+                        cmd.Parameters.AddWithValue("@notes", record.Notes ?? (object)DBNull.Value);
+                        cmd.ExecuteNonQuery();
+                        return true;
+                    }
+                }
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        public int? GetVeterinarianIdByUserId(int userId)
+        {
+            try
+            {
+                using (var conn = DatabaseHelper.GetConnection())
+                {
+                    conn.Open();
+                    var query = "SELECT Id FROM Veterinarian WHERE UserId = @userId";
+                    using (var cmd = new NpgsqlCommand(query, conn))
+                    {
+                        cmd.Parameters.AddWithValue("@userId", userId);
+                        var result = cmd.ExecuteScalar();
+                        return result != null ? Convert.ToInt32(result) : (int?)null;
+                    }
+                }
+            }
+            catch
+            {
+                return null;
+            }
+        }
     }
 }
