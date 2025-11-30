@@ -1,14 +1,14 @@
 <Window x:Class="ShelterAppProduction.LoginWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="Вход в систему" Height="580" Width="450"
+        Title="Вход в систему" Height="650" Width="450"
         WindowStartupLocation="CenterScreen"
         ResizeMode="NoResize"
         Background="{StaticResource LightBeige}">
     <Grid>
         <Border Style="{StaticResource CardBorder}"
                 Width="380"
-                Height="500"
+                Height="560"
                 VerticalAlignment="Center">
             <StackPanel>
                 <TextBlock Text="Приют для животных"
