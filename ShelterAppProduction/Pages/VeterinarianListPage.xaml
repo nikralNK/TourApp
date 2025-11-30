@@ -43,11 +43,11 @@
                         <DataGridTemplateColumn Header="Действия" Width="250">
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
-                                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
                                         <Button Content="Редактировать" Click="EditButton_Click" Tag="{Binding Id}"
-                                                Width="120" Margin="5" Height="30"/>
+                                                Width="120" Margin="5,0" Height="30" VerticalAlignment="Center"/>
                                         <Button Content="Удалить" Click="DeleteButton_Click" Tag="{Binding Id}"
-                                                Width="80" Margin="5" Height="30"
+                                                Width="80" Margin="5,0" Height="30" VerticalAlignment="Center"
                                                 Background="#FFE57373" Foreground="White"/>
                                     </StackPanel>
                                 </DataTemplate>
