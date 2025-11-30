@@ -64,12 +64,18 @@ namespace ShelterAppProduction.Repositories
                 using (var conn = DatabaseHelper.GetConnection())
                 {
                     conn.Open();
-                    var query = "SELECT * FROM Application ORDER BY ApplicationDate DESC";
+                    var query = @"SELECT a.Id, a.IdAnimal, a.IdGuardian, a.ApplicationDate, a.Status, a.Comments, g.FullName
+                                  FROM Application a
+                                  LEFT JOIN Guardian g ON a.IdGuardian = g.Id
+                                  ORDER BY a.ApplicationDate DESC";
                     using (var cmd = new NpgsqlCommand(query, conn))
                     using (var reader = cmd.ExecuteReader())
                     {
                         while (reader.Read())
                         {
+                            var fullName = reader.IsDBNull(6) ? "" : reader.GetString(6);
+                            var shortName = GetShortName(fullName);
+
                             applications.Add(new Application
                             {
                                 Id = reader.GetInt32(0),
@@ -77,7 +83,8 @@ namespace ShelterAppProduction.Repositories
                                 IdGuardian = reader.GetInt32(2),
                                 ApplicationDate = reader.GetDateTime(3),
                                 Status = reader.IsDBNull(4) ? "На рассмотрении" : reader.GetString(4),
-                                Comments = reader.IsDBNull(5) ? null : reader.GetString(5)
+                                Comments = reader.IsDBNull(5) ? null : reader.GetString(5),
+                                GuardianShortName = shortName
                             });
                         }
                     }
@@ -85,6 +92,22 @@ namespace ShelterAppProduction.Repositories
             }
             catch { }
             return applications;
+        }
+
+        private string GetShortName(string fullName)
+        {
+            if (string.IsNullOrWhiteSpace(fullName))
+                return "Не указано";
+
+            var parts = fullName.Trim().Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+            if (parts.Length == 0)
+                return "Не указано";
+            if (parts.Length == 1)
+                return parts[0];
+            if (parts.Length == 2)
+                return $"{parts[0]} {parts[1][0]}.";
+
+            return $"{parts[0]} {parts[1][0]}. {parts[2][0]}.";
         }
 
         public void UpdateApplicationStatus(int applicationId, string status)

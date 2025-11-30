@@ -10,5 +10,6 @@ namespace ShelterAppProduction.Models
         public DateTime ApplicationDate { get; set; }
         public string Status { get; set; }
         public string Comments { get; set; }
+        public string GuardianShortName { get; set; }
     }
 }

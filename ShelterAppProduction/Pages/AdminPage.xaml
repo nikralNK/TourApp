@@ -49,7 +49,17 @@
                                 </DataTemplate>
                             </DataGridTemplateColumn.CellTemplate>
                         </DataGridTemplateColumn>
-                        <DataGridTextColumn Header="ID Опекуна" Binding="{Binding IdGuardian}" Width="120" IsReadOnly="True"/>
+                        <DataGridTemplateColumn Header="Опекун" Width="180">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding GuardianShortName}"
+                                              MouseEnter="GuardianName_MouseEnter"
+                                              MouseLeave="GuardianName_MouseLeave"
+                                              Tag="{Binding IdGuardian}"
+                                              Cursor="Hand"/>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
                         <DataGridTextColumn Header="Дата заявки" Binding="{Binding ApplicationDate, StringFormat='dd.MM.yyyy HH:mm'}" Width="150" IsReadOnly="True"/>
                         <DataGridTextColumn Header="Статус" Binding="{Binding Status}" Width="120"/>
                         <DataGridTextColumn Header="Комментарии" Binding="{Binding Comments}" Width="*" IsReadOnly="True"/>
@@ -119,6 +129,30 @@
                     <TextBlock x:Name="PopupAnimalSize" Margin="0,0,0,5"/>
                     <TextBlock x:Name="PopupAnimalTemperament" Margin="0,0,0,5"/>
                     <TextBlock x:Name="PopupAnimalStatus" Margin="0,0,0,5"/>
+                </StackPanel>
+            </Border>
+        </Popup>
+
+        <Popup x:Name="GuardianInfoPopup"
+               PlacementTarget="{Binding ElementName=ApplicationsDataGrid}"
+               Placement="Mouse"
+               AllowsTransparency="True"
+               StaysOpen="True">
+            <Border Background="White"
+                    BorderBrush="{StaticResource PrimaryGreen}"
+                    BorderThickness="2"
+                    CornerRadius="8"
+                    Padding="15"
+                    MaxWidth="400">
+                <Border.Effect>
+                    <DropShadowEffect BlurRadius="10" ShadowDepth="3" Opacity="0.3"/>
+                </Border.Effect>
+                <StackPanel>
+                    <TextBlock x:Name="PopupGuardianFullName" FontWeight="Bold" FontSize="16" Margin="0,0,0,10"/>
+                    <TextBlock x:Name="PopupGuardianPhone" Margin="0,0,0,5"/>
+                    <TextBlock x:Name="PopupGuardianEmail" Margin="0,0,0,5"/>
+                    <TextBlock x:Name="PopupGuardianAddress" Margin="0,0,0,5"/>
+                    <TextBlock x:Name="PopupGuardianRegistrationDate" Margin="0,0,0,5"/>
                 </StackPanel>
             </Border>
         </Popup>

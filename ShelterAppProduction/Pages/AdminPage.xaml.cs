@@ -10,6 +10,7 @@ namespace ShelterAppProduction.Pages
     {
         private ApplicationRepository applicationRepository = new ApplicationRepository();
         private AnimalRepository animalRepository = new AnimalRepository();
+        private GuardianRepository guardianRepository = new GuardianRepository();
 
         public AdminPage()
         {
@@ -106,6 +107,32 @@ namespace ShelterAppProduction.Pages
         private void AnimalId_MouseLeave(object sender, MouseEventArgs e)
         {
             AnimalInfoPopup.IsOpen = false;
+        }
+
+        private void GuardianName_MouseEnter(object sender, MouseEventArgs e)
+        {
+            var textBlock = sender as TextBlock;
+            if (textBlock != null && textBlock.Tag != null)
+            {
+                var guardianId = (int)textBlock.Tag;
+                var guardian = guardianRepository.GetById(guardianId);
+
+                if (guardian != null)
+                {
+                    PopupGuardianFullName.Text = $"ФИО: {guardian.FullName}";
+                    PopupGuardianPhone.Text = $"Телефон: {guardian.PhoneNumber ?? "Не указано"}";
+                    PopupGuardianEmail.Text = $"Email: {guardian.Email ?? "Не указано"}";
+                    PopupGuardianAddress.Text = $"Адрес: {guardian.Address ?? "Не указано"}";
+                    PopupGuardianRegistrationDate.Text = $"Дата регистрации: {guardian.RegistrationDate:dd.MM.yyyy}";
+
+                    GuardianInfoPopup.IsOpen = true;
+                }
+            }
+        }
+
+        private void GuardianName_MouseLeave(object sender, MouseEventArgs e)
+        {
+            GuardianInfoPopup.IsOpen = false;
         }
     }
 }
