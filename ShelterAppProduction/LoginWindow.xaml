@@ -11,7 +11,7 @@
                 Height="560"
                 VerticalAlignment="Center">
             <StackPanel>
-                <TextBlock Text="Приют для животных"
+                <TextBlock Text="Дорога домой"
                           Style="{StaticResource TitleText}"
                           HorizontalAlignment="Center"
                           Margin="0,10,0,10"/>

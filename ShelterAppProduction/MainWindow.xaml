@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:ShelterAppProduction"
         mc:Ignorable="d"
-        Title="Приют для животных" Height="700" Width="1200"
+        Title="Дорога домой" Height="700" Width="1200"
         WindowStartupLocation="CenterScreen"
         Background="{StaticResource LightBeige}">
     <Grid>
