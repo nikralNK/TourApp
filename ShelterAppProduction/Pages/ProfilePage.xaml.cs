@@ -20,9 +20,11 @@ namespace ShelterAppProduction.Pages
             {
                 var user = SessionManager.CurrentUser;
                 UsernameTextBlock.Text = user.Username;
-                FullNameTextBlock.Text = user.FullName ?? "Не указано";
+                FullNameTextBox.Text = user.FullName ?? "";
                 EmailTextBlock.Text = user.Email ?? "Не указано";
                 RoleTextBlock.Text = user.Role ?? "User";
+                AvatarTextBox.Text = user.Avatar ?? "";
+                AvatarTextBlock.Text = user.Avatar ?? "👤";
             }
         }
 
@@ -59,6 +61,29 @@ namespace ShelterAppProduction.Pages
 
             NewPasswordBox.Clear();
             ConfirmPasswordBox.Clear();
+        }
+
+        private void SaveProfileButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (!SessionManager.IsAuthenticated)
+                return;
+
+            var fullName = FullNameTextBox.Text.Trim();
+            var avatar = AvatarTextBox.Text.Trim();
+
+            if (string.IsNullOrWhiteSpace(fullName))
+            {
+                MessageBox.Show("Введите полное имя", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
+            var result = authService.UpdateProfile(SessionManager.CurrentUser.Id, fullName, avatar);
+
+            if (result)
+            {
+                AvatarTextBlock.Text = string.IsNullOrWhiteSpace(avatar) ? "👤" : avatar;
+                MessageBox.Show("Профиль успешно обновлен", "Успех", MessageBoxButton.OK, MessageBoxImage.Information);
+            }
         }
     }
 }

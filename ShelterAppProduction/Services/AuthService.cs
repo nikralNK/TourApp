@@ -31,7 +31,8 @@ namespace ShelterAppProduction.Services
                                     PasswordHash = reader.GetString(2),
                                     Email = reader.GetString(3),
                                     FullName = reader.IsDBNull(4) ? null : reader.GetString(4),
-                                    Role = reader.IsDBNull(5) ? "User" : reader.GetString(5)
+                                    Role = reader.IsDBNull(5) ? "User" : reader.GetString(5),
+                                    Avatar = reader.IsDBNull(6) ? null : reader.GetString(6)
                                 };
 
                                 if (BCrypt.Net.BCrypt.Verify(password, user.PasswordHash))
@@ -111,6 +112,38 @@ namespace ShelterAppProduction.Services
             catch (Exception ex)
             {
                 MessageBox.Show($"Ошибка при регистрации: {ex.Message}", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+                return false;
+            }
+        }
+
+        public bool UpdateProfile(int userId, string fullName, string avatar)
+        {
+            try
+            {
+                using (var conn = DatabaseHelper.GetConnection())
+                {
+                    conn.Open();
+                    var query = "UPDATE Users SET FullName = @fullName, Avatar = @avatar WHERE Id = @userId";
+                    using (var cmd = new NpgsqlCommand(query, conn))
+                    {
+                        cmd.Parameters.AddWithValue("@fullName", fullName);
+                        cmd.Parameters.AddWithValue("@avatar", avatar ?? (object)DBNull.Value);
+                        cmd.Parameters.AddWithValue("@userId", userId);
+                        cmd.ExecuteNonQuery();
+
+                        if (SessionManager.CurrentUser != null && SessionManager.CurrentUser.Id == userId)
+                        {
+                            SessionManager.CurrentUser.FullName = fullName;
+                            SessionManager.CurrentUser.Avatar = avatar;
+                        }
+
+                        return true;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Ошибка при обновлении профиля: {ex.Message}", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
                 return false;
             }
         }
