@@ -19,12 +19,11 @@
         <Border Grid.Row="1" Style="{StaticResource CardBorder}" Width="500" VerticalAlignment="Top" Margin="0,20,0,0">
             <StackPanel>
                 <TextBlock Text="Аватар" FontWeight="Bold" FontSize="16" Margin="0,10,0,10"/>
-                <Border BorderBrush="{StaticResource LightGray}" BorderThickness="1" Width="120" Height="120" CornerRadius="60" HorizontalAlignment="Left" Margin="0,0,0,10">
-                    <TextBlock x:Name="AvatarTextBlock" FontSize="48" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                <Border BorderBrush="{StaticResource LightGray}" BorderThickness="2" Width="120" Height="120" CornerRadius="60" HorizontalAlignment="Left" Margin="0,0,0,10" ClipToBounds="True">
+                    <Image x:Name="AvatarImage" Stretch="UniformToFill"/>
                 </Border>
 
-                <TextBlock Text="Выберите эмодзи для аватара:" Margin="0,5,0,5"/>
-                <TextBox x:Name="AvatarTextBox" Height="40" Margin="0,0,0,10" MaxLength="2"/>
+                <Button Content="Выбрать фото" Click="SelectAvatarButton_Click" Width="150" Height="40" Margin="0,0,0,10" HorizontalAlignment="Left"/>
 
                 <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
                     <TextBlock Text="Имя пользователя: " FontWeight="Bold" FontSize="16" Width="200"/>

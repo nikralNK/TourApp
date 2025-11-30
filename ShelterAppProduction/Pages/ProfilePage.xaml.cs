@@ -1,5 +1,9 @@
+using System;
+using System.IO;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Media.Imaging;
+using Microsoft.Win32;
 using ShelterAppProduction.Services;
 
 namespace ShelterAppProduction.Pages
@@ -7,6 +11,7 @@ namespace ShelterAppProduction.Pages
     public partial class ProfilePage : Page
     {
         private AuthService authService = new AuthService();
+        private string selectedAvatarPath = null;
 
         public ProfilePage()
         {
@@ -23,9 +28,26 @@ namespace ShelterAppProduction.Pages
                 FullNameTextBox.Text = user.FullName ?? "";
                 EmailTextBlock.Text = user.Email ?? "Не указано";
                 RoleTextBlock.Text = user.Role ?? "User";
-                AvatarTextBox.Text = user.Avatar ?? "";
-                AvatarTextBlock.Text = user.Avatar ?? "👤";
+
+                if (!string.IsNullOrWhiteSpace(user.Avatar) && File.Exists(user.Avatar))
+                {
+                    LoadAvatar(user.Avatar);
+                }
             }
+        }
+
+        private void LoadAvatar(string path)
+        {
+            try
+            {
+                var bitmap = new BitmapImage();
+                bitmap.BeginInit();
+                bitmap.CacheOption = BitmapCacheOption.OnLoad;
+                bitmap.UriSource = new Uri(path, UriKind.Absolute);
+                bitmap.EndInit();
+                AvatarImage.Source = bitmap;
+            }
+            catch { }
         }
 
         private void ChangePasswordButton_Click(object sender, RoutedEventArgs e)
@@ -63,13 +85,27 @@ namespace ShelterAppProduction.Pages
             ConfirmPasswordBox.Clear();
         }
 
+        private void SelectAvatarButton_Click(object sender, RoutedEventArgs e)
+        {
+            var openFileDialog = new OpenFileDialog
+            {
+                Filter = "Изображения|*.jpg;*.jpeg;*.png;*.bmp;*.gif",
+                Title = "Выберите изображение для аватара"
+            };
+
+            if (openFileDialog.ShowDialog() == true)
+            {
+                selectedAvatarPath = openFileDialog.FileName;
+                LoadAvatar(selectedAvatarPath);
+            }
+        }
+
         private void SaveProfileButton_Click(object sender, RoutedEventArgs e)
         {
             if (!SessionManager.IsAuthenticated)
                 return;
 
             var fullName = FullNameTextBox.Text.Trim();
-            var avatar = AvatarTextBox.Text.Trim();
 
             if (string.IsNullOrWhiteSpace(fullName))
             {
@@ -77,11 +113,36 @@ namespace ShelterAppProduction.Pages
                 return;
             }
 
-            var result = authService.UpdateProfile(SessionManager.CurrentUser.Id, fullName, avatar);
+            string avatarPathToSave = selectedAvatarPath ?? SessionManager.CurrentUser.Avatar;
+
+            if (!string.IsNullOrWhiteSpace(selectedAvatarPath))
+            {
+                try
+                {
+                    var avatarsFolder = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Avatars");
+                    if (!Directory.Exists(avatarsFolder))
+                    {
+                        Directory.CreateDirectory(avatarsFolder);
+                    }
+
+                    var fileName = $"{SessionManager.CurrentUser.Id}_{Path.GetFileName(selectedAvatarPath)}";
+                    var destPath = Path.Combine(avatarsFolder, fileName);
+
+                    File.Copy(selectedAvatarPath, destPath, true);
+                    avatarPathToSave = destPath;
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"Ошибка при сохранении аватара: {ex.Message}", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+                    return;
+                }
+            }
+
+            var result = authService.UpdateProfile(SessionManager.CurrentUser.Id, fullName, avatarPathToSave);
 
             if (result)
             {
-                AvatarTextBlock.Text = string.IsNullOrWhiteSpace(avatar) ? "👤" : avatar;
+                selectedAvatarPath = null;
                 MessageBox.Show("Профиль успешно обновлен", "Успех", MessageBoxButton.OK, MessageBoxImage.Information);
             }
         }
