@@ -147,5 +147,44 @@ namespace ShelterAppProduction.Services
                 return false;
             }
         }
+
+        public int? RegisterUser(string username, string password, string fullName, string role)
+        {
+            try
+            {
+                using (var conn = DatabaseHelper.GetConnection())
+                {
+                    conn.Open();
+
+                    var checkQuery = "SELECT COUNT(*) FROM Users WHERE Username = @username";
+                    using (var checkCmd = new NpgsqlCommand(checkQuery, conn))
+                    {
+                        checkCmd.Parameters.AddWithValue("@username", username);
+                        var count = Convert.ToInt32(checkCmd.ExecuteScalar());
+                        if (count > 0)
+                        {
+                            return null;
+                        }
+                    }
+
+                    var passwordHash = BCrypt.Net.BCrypt.HashPassword(password);
+                    var insertQuery = "INSERT INTO Users (Username, PasswordHash, Email, FullName, Role) VALUES (@username, @passwordHash, @email, @fullName, @role) RETURNING Id";
+                    using (var cmd = new NpgsqlCommand(insertQuery, conn))
+                    {
+                        cmd.Parameters.AddWithValue("@username", username);
+                        cmd.Parameters.AddWithValue("@passwordHash", passwordHash);
+                        cmd.Parameters.AddWithValue("@email", username + "@shelter.local");
+                        cmd.Parameters.AddWithValue("@fullName", fullName);
+                        cmd.Parameters.AddWithValue("@role", role);
+                        var userId = cmd.ExecuteScalar();
+                        return Convert.ToInt32(userId);
+                    }
+                }
+            }
+            catch
+            {
+                return null;
+            }
+        }
     }
 }
