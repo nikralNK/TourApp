@@ -52,7 +52,7 @@ namespace ShelterAppProduction.Pages
 
             if (result == MessageBoxResult.Yes)
             {
-                applicationRepository.UpdateApplicationStatus(applicationId, "Approved");
+                applicationRepository.UpdateApplicationStatus(applicationId, "Одобрена");
                 LoadApplications();
                 MessageBox.Show("Заявка одобрена", "Успех", MessageBoxButton.OK, MessageBoxImage.Information);
             }
@@ -71,7 +71,7 @@ namespace ShelterAppProduction.Pages
 
             if (result == MessageBoxResult.Yes)
             {
-                applicationRepository.UpdateApplicationStatus(applicationId, "Rejected");
+                applicationRepository.UpdateApplicationStatus(applicationId, "Отклонена");
                 LoadApplications();
                 MessageBox.Show("Заявка отклонена", "Успех", MessageBoxButton.OK, MessageBoxImage.Information);
             }

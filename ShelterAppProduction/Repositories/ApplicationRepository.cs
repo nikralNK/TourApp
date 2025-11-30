@@ -47,7 +47,7 @@ namespace ShelterAppProduction.Repositories
                         cmd.Parameters.AddWithValue("@animalId", animalId);
                         cmd.Parameters.AddWithValue("@guardianId", guardianId);
                         cmd.Parameters.AddWithValue("@date", DateTime.Now);
-                        cmd.Parameters.AddWithValue("@status", "Pending");
+                        cmd.Parameters.AddWithValue("@status", "На рассмотрении");
                         cmd.Parameters.AddWithValue("@comments", comments ?? "");
                         cmd.ExecuteNonQuery();
                     }
@@ -76,7 +76,7 @@ namespace ShelterAppProduction.Repositories
                                 IdAnimal = reader.GetInt32(1),
                                 IdGuardian = reader.GetInt32(2),
                                 ApplicationDate = reader.GetDateTime(3),
-                                Status = reader.IsDBNull(4) ? "Pending" : reader.GetString(4),
+                                Status = reader.IsDBNull(4) ? "На рассмотрении" : reader.GetString(4),
                                 Comments = reader.IsDBNull(5) ? null : reader.GetString(5)
                             });
                         }

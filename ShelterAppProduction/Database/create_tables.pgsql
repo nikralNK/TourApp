@@ -43,7 +43,7 @@ CREATE TABLE IF NOT EXISTS Application (
     IdAnimal INTEGER REFERENCES Animal(Id) ON DELETE CASCADE,
     IdGuardian INTEGER REFERENCES Guardian(Id) ON DELETE CASCADE,
     ApplicationDate TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    Status VARCHAR(50) DEFAULT 'Pending',
+    Status VARCHAR(50) DEFAULT 'На рассмотрении',
     Comments TEXT
 );
 
