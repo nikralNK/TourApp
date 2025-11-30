@@ -77,7 +77,7 @@
                     </StackPanel>
                 </Border>
 
-                <Border Grid.Column="1" Style="{StaticResource CardBorder}" Margin="10,0,0,0">
+                <Border x:Name="ApplicationBorder" Grid.Column="1" Style="{StaticResource CardBorder}" Margin="10,0,0,0">
                     <StackPanel>
                         <TextBlock Text="Подать заявку на опекунство" Style="{StaticResource SubtitleText}"/>
 

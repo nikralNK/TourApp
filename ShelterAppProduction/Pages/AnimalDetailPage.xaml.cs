@@ -49,6 +49,11 @@ namespace ShelterAppProduction.Pages
                 {
                     FavoriteButton.Content = "♥ Удалить из избранного";
                 }
+
+                if (SessionManager.IsAuthenticated && (SessionManager.CurrentUser.Role == "admin" || SessionManager.CurrentUser.Role == "veterinarian"))
+                {
+                    ApplicationBorder.Visibility = Visibility.Collapsed;
+                }
             }
         }
 
