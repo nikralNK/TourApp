@@ -19,8 +19,10 @@ namespace ShelterAppProduction
 
                 if (SessionManager.IsAdmin)
                 {
+                    MessageBox.Show("Устанавливаем видимость кнопок администратора", "Отладка");
                     AdminButton.Visibility = Visibility.Visible;
                     VeterinarianButton.Visibility = Visibility.Visible;
+                    MessageBox.Show($"AdminButton.Visibility = {AdminButton.Visibility}\nVeterinarianButton.Visibility = {VeterinarianButton.Visibility}", "Отладка после установки");
                 }
             }
 
