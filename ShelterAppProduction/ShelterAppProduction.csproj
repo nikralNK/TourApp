@@ -192,6 +192,7 @@
     <Compile Include="Repositories\ApplicationRepository.cs" />
     <Compile Include="Repositories\FavoriteRepository.cs" />
     <Compile Include="Repositories\GuardianRepository.cs" />
+    <Compile Include="Repositories\MedicalRecordRepository.cs" />
     <Compile Include="Repositories\VeterinarianRepository.cs" />
     <Compile Include="Services\AuthService.cs" />
     <Compile Include="Services\SessionManager.cs" />

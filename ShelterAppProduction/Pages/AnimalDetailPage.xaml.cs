@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Windows;
 using System.Windows.Controls;
@@ -9,6 +10,15 @@ using ShelterAppProduction.Services;
 
 namespace ShelterAppProduction.Pages
 {
+    public class MedicalRecordViewModel
+    {
+        public DateTime VisitDate { get; set; }
+        public string VeterinarianName { get; set; }
+        public string Diagnosis { get; set; }
+        public string Treatment { get; set; }
+        public string Notes { get; set; }
+    }
+
     public partial class AnimalDetailPage : Page
     {
         private int animalId;
@@ -16,6 +26,7 @@ namespace ShelterAppProduction.Pages
         private AnimalRepository animalRepository = new AnimalRepository();
         private FavoriteRepository favoriteRepository = new FavoriteRepository();
         private ApplicationRepository applicationRepository = new ApplicationRepository();
+        private MedicalRecordRepository medicalRecordRepository = new MedicalRecordRepository();
 
         public AnimalDetailPage(int id)
         {
@@ -54,6 +65,37 @@ namespace ShelterAppProduction.Pages
                 {
                     ApplicationBorder.Visibility = Visibility.Collapsed;
                 }
+            }
+
+            LoadMedicalRecords();
+        }
+
+        private void LoadMedicalRecords()
+        {
+            var records = medicalRecordRepository.GetByAnimalId(animalId);
+
+            if (records.Count == 0)
+            {
+                NoMedicalRecordsTextBlock.Visibility = Visibility.Visible;
+                MedicalRecordsItemsControl.Visibility = Visibility.Collapsed;
+            }
+            else
+            {
+                var viewModels = new List<MedicalRecordViewModel>();
+                foreach (var record in records)
+                {
+                    viewModels.Add(new MedicalRecordViewModel
+                    {
+                        VisitDate = record.VisitDate,
+                        VeterinarianName = medicalRecordRepository.GetVeterinarianName(record.IdVeterinarian),
+                        Diagnosis = record.Diagnosis ?? "Не указан",
+                        Treatment = record.Treatment ?? "Не указано",
+                        Notes = record.Notes ?? "Нет примечаний"
+                    });
+                }
+                MedicalRecordsItemsControl.ItemsSource = viewModels;
+                NoMedicalRecordsTextBlock.Visibility = Visibility.Collapsed;
+                MedicalRecordsItemsControl.Visibility = Visibility.Visible;
             }
         }
 

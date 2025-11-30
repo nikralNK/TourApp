@@ -17,14 +17,16 @@
 
             <Button Grid.Row="0" Content="← Назад к каталогу" Click="BackButton_Click" HorizontalAlignment="Left" Width="200"/>
 
-            <Grid Grid.Row="1" Margin="0,20,0,0">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="*"/>
-                </Grid.ColumnDefinitions>
+            <TabControl Grid.Row="1" Margin="0,20,0,0">
+                <TabItem Header="Информация о питомце">
+                    <Grid Margin="0,20,0,0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
 
-                <Border Grid.Column="0" Style="{StaticResource CardBorder}" Margin="0,0,10,0">
-                    <StackPanel>
+                        <Border Grid.Column="0" Style="{StaticResource CardBorder}" Margin="0,0,10,0">
+                            <StackPanel>
                         <TextBlock x:Name="AnimalNameTextBlock" Style="{StaticResource TitleText}" HorizontalAlignment="Center"/>
 
                         <Border BorderBrush="{StaticResource LightGray}" BorderThickness="2" Width="400" Height="300" Margin="0,20,0,20" HorizontalAlignment="Center" ClipToBounds="True">
@@ -73,11 +75,11 @@
                             </StackPanel>
                         </StackPanel>
 
-                        <Button x:Name="FavoriteButton" Content="♡ Добавить в избранное" Click="FavoriteButton_Click" Margin="0,20,0,0" Height="40"/>
-                    </StackPanel>
-                </Border>
+                                <Button x:Name="FavoriteButton" Content="♡ Добавить в избранное" Click="FavoriteButton_Click" Margin="0,20,0,0" Height="40"/>
+                            </StackPanel>
+                        </Border>
 
-                <Border x:Name="ApplicationBorder" Grid.Column="1" Style="{StaticResource CardBorder}" Margin="10,0,0,0">
+                        <Border x:Name="ApplicationBorder" Grid.Column="1" Style="{StaticResource CardBorder}" Margin="10,0,0,0">
                     <StackPanel>
                         <TextBlock Text="Подать заявку на опекунство" Style="{StaticResource SubtitleText}"/>
 
@@ -95,15 +97,67 @@
 
                         <Button Content="Подать заявку" Click="SubmitApplicationButton_Click" Margin="0,20,0,0" Height="45"/>
 
-                        <TextBlock x:Name="ApplicationStatusTextBlock"
-                                  Text=""
-                                  Foreground="Green"
-                                  HorizontalAlignment="Center"
-                                  Margin="0,10,0,0"
-                                  TextWrapping="Wrap"/>
-                    </StackPanel>
-                </Border>
-            </Grid>
+                            <TextBlock x:Name="ApplicationStatusTextBlock"
+                                      Text=""
+                                      Foreground="Green"
+                                      HorizontalAlignment="Center"
+                                      Margin="0,10,0,0"
+                                      TextWrapping="Wrap"/>
+                        </StackPanel>
+                    </Border>
+                    </Grid>
+                </TabItem>
+
+                <TabItem Header="Медицинская карта">
+                    <Border Style="{StaticResource CardBorder}" Margin="20">
+                        <StackPanel>
+                            <TextBlock Text="История медицинских осмотров" Style="{StaticResource TitleText}" Margin="0,0,0,20"/>
+
+                            <ItemsControl x:Name="MedicalRecordsItemsControl">
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <Border Style="{StaticResource CardBorder}" Margin="0,0,0,15" Background="White">
+                                            <StackPanel>
+                                                <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
+                                                    <TextBlock Text="Дата визита: " FontWeight="Bold"/>
+                                                    <TextBlock Text="{Binding VisitDate, StringFormat='{}{0:dd.MM.yyyy}'}" />
+                                                </StackPanel>
+
+                                                <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
+                                                    <TextBlock Text="Ветеринар: " FontWeight="Bold"/>
+                                                    <TextBlock Text="{Binding VeterinarianName}" />
+                                                </StackPanel>
+
+                                                <StackPanel Margin="0,0,0,10">
+                                                    <TextBlock Text="Диагноз:" FontWeight="Bold" Margin="0,0,0,5"/>
+                                                    <TextBlock Text="{Binding Diagnosis}" TextWrapping="Wrap"/>
+                                                </StackPanel>
+
+                                                <StackPanel Margin="0,0,0,10">
+                                                    <TextBlock Text="Лечение:" FontWeight="Bold" Margin="0,0,0,5"/>
+                                                    <TextBlock Text="{Binding Treatment}" TextWrapping="Wrap"/>
+                                                </StackPanel>
+
+                                                <StackPanel>
+                                                    <TextBlock Text="Примечания:" FontWeight="Bold" Margin="0,0,0,5"/>
+                                                    <TextBlock Text="{Binding Notes}" TextWrapping="Wrap"/>
+                                                </StackPanel>
+                                            </StackPanel>
+                                        </Border>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+
+                            <TextBlock x:Name="NoMedicalRecordsTextBlock"
+                                      Text="Нет медицинских записей"
+                                      Foreground="Gray"
+                                      HorizontalAlignment="Center"
+                                      Margin="0,20,0,0"
+                                      Visibility="Collapsed"/>
+                        </StackPanel>
+                    </Border>
+                </TabItem>
+            </TabControl>
         </Grid>
     </ScrollViewer>
 </Page>
