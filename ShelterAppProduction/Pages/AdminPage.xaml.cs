@@ -81,13 +81,13 @@ namespace ShelterAppProduction.Pages
             }
         }
 
-        private void AnimalId_MouseEnter(object sender, MouseEventArgs e)
+        private async void AnimalId_MouseEnter(object sender, MouseEventArgs e)
         {
             var textBlock = sender as TextBlock;
             if (textBlock != null && textBlock.Tag != null)
             {
                 var animalId = (int)textBlock.Tag;
-                var animal = animalRepository.GetById(animalId);
+                var animal = await animalRepository.GetById(animalId);
 
                 if (animal != null)
                 {
@@ -110,13 +110,13 @@ namespace ShelterAppProduction.Pages
             AnimalInfoPopup.IsOpen = false;
         }
 
-        private void GuardianName_MouseEnter(object sender, MouseEventArgs e)
+        private async void GuardianName_MouseEnter(object sender, MouseEventArgs e)
         {
             var textBlock = sender as TextBlock;
             if (textBlock != null && textBlock.Tag != null)
             {
                 var guardianId = (int)textBlock.Tag;
-                var guardian = guardianRepository.GetById(guardianId);
+                var guardian = await guardianRepository.GetById(guardianId);
 
                 if (guardian != null)
                 {
