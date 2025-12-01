@@ -103,18 +103,7 @@ namespace ShelterAppProduction.Repositories
         {
             try
             {
-                var guardians = await _guardianRepository.GetAllGuardians();
-                var guardian = guardians.FirstOrDefault(g => g.Email == email);
-
-                if (guardian == null)
-                    return null;
-
-                var applications = await ApiService.GetAsync<List<ApplicationResponse>>("applications/");
-
-                var application = applications
-                    .Where(a => a.IdGuardian == guardian.Id && a.IdAnimal == animalId)
-                    .OrderByDescending(a => a.ApplicationDate)
-                    .FirstOrDefault();
+                var application = await ApiService.GetAsync<ApplicationResponse>($"applications/guardian/{Uri.EscapeDataString(email)}/animal/{animalId}");
 
                 if (application == null)
                     return null;
