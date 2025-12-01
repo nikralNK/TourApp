@@ -164,6 +164,7 @@
     <Compile Include="Models\ShelterEmployee.cs" />
     <Compile Include="Models\User.cs" />
     <Compile Include="Models\Veterinarian.cs" />
+    <Compile Include="Models\ApiModels.cs" />
     <Compile Include="Pages\AddAnimalPage.xaml.cs">
       <DependentUpon>AddAnimalPage.xaml</DependentUpon>
     </Compile>
@@ -194,6 +195,7 @@
     <Compile Include="Repositories\GuardianRepository.cs" />
     <Compile Include="Repositories\MedicalRecordRepository.cs" />
     <Compile Include="Repositories\VeterinarianRepository.cs" />
+    <Compile Include="Services\ApiService.cs" />
     <Compile Include="Services\AuthService.cs" />
     <Compile Include="Services\SessionManager.cs" />
   </ItemGroup>

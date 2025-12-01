@@ -1,113 +1,62 @@
-using BCrypt.Net;
-using Npgsql;
-using ShelterAppProduction.Database;
 using ShelterAppProduction.Models;
 using System;
+using System.Threading.Tasks;
 using System.Windows;
 
 namespace ShelterAppProduction.Services
 {
     public class AuthService
     {
-        public User Login(string username, string password)
+        public async Task<User> Login(string username, string password)
         {
             try
             {
-                using (var conn = DatabaseHelper.GetConnection())
+                var loginRequest = new LoginRequest
                 {
-                    conn.Open();
-                    var query = "SELECT * FROM Users WHERE Username = @username";
-                    using (var cmd = new NpgsqlCommand(query, conn))
-                    {
-                        cmd.Parameters.AddWithValue("@username", username);
-                        using (var reader = cmd.ExecuteReader())
-                        {
-                            if (reader.Read())
-                            {
-                                var user = new User
-                                {
-                                    Id = reader.GetInt32(0),
-                                    Username = reader.GetString(1),
-                                    PasswordHash = reader.GetString(2),
-                                    Email = reader.GetString(3),
-                                    FullName = reader.IsDBNull(4) ? null : reader.GetString(4),
-                                    Role = reader.IsDBNull(5) ? "User" : reader.GetString(5),
-                                    Avatar = reader.IsDBNull(6) ? null : reader.GetString(6)
-                                };
+                    Username = username,
+                    Password = password
+                };
 
-                                if (BCrypt.Net.BCrypt.Verify(password, user.PasswordHash))
-                                {
-                                    SessionManager.CurrentUser = user;
-                                    return user;
-                                }
-                            }
-                        }
-                    }
-                }
+                var response = await ApiService.PostAsync<LoginResponse>("auth/login", loginRequest);
+
+                ApiService.SetAuthToken(response.AccessToken);
+
+                var userResponse = await ApiService.GetAsync<UserResponse>("users/me");
+
+                var user = new User
+                {
+                    Id = userResponse.Id,
+                    Username = userResponse.Username,
+                    Email = userResponse.Email,
+                    FullName = userResponse.Fullname,
+                    Role = userResponse.Role,
+                    Avatar = userResponse.Avatar
+                };
+
+                SessionManager.CurrentUser = user;
+                return user;
             }
             catch (Exception ex)
             {
                 MessageBox.Show($"Ошибка при входе: {ex.Message}", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
                 return null;
             }
-            return null;
         }
 
-        public void ResetPassword(string username, string newPassword)
+        public async Task<bool> Register(string username, string password, string email, string fullName)
         {
             try
             {
-                var passwordHash = BCrypt.Net.BCrypt.HashPassword(newPassword);
-                using (var conn = DatabaseHelper.GetConnection())
+                var registerRequest = new UserRegisterRequest
                 {
-                    conn.Open();
-                    var query = "UPDATE Users SET PasswordHash = @passwordHash WHERE Username = @username";
-                    using (var cmd = new NpgsqlCommand(query, conn))
-                    {
-                        cmd.Parameters.AddWithValue("@passwordHash", passwordHash);
-                        cmd.Parameters.AddWithValue("@username", username);
-                        cmd.ExecuteNonQuery();
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"Ошибка при сбросе пароля: {ex.Message}", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
-            }
-        }
+                    Username = username,
+                    Password = password,
+                    Email = email,
+                    Fullname = fullName
+                };
 
-        public bool Register(string username, string password, string email, string fullName)
-        {
-            try
-            {
-                using (var conn = DatabaseHelper.GetConnection())
-                {
-                    conn.Open();
-
-                    var checkQuery = "SELECT COUNT(*) FROM Users WHERE Username = @username";
-                    using (var checkCmd = new NpgsqlCommand(checkQuery, conn))
-                    {
-                        checkCmd.Parameters.AddWithValue("@username", username);
-                        var count = Convert.ToInt32(checkCmd.ExecuteScalar());
-                        if (count > 0)
-                        {
-                            return false;
-                        }
-                    }
-
-                    var passwordHash = BCrypt.Net.BCrypt.HashPassword(password);
-                    var insertQuery = "INSERT INTO Users (Username, PasswordHash, Email, FullName, Role) VALUES (@username, @passwordHash, @email, @fullName, @role)";
-                    using (var cmd = new NpgsqlCommand(insertQuery, conn))
-                    {
-                        cmd.Parameters.AddWithValue("@username", username);
-                        cmd.Parameters.AddWithValue("@passwordHash", passwordHash);
-                        cmd.Parameters.AddWithValue("@email", email);
-                        cmd.Parameters.AddWithValue("@fullName", fullName);
-                        cmd.Parameters.AddWithValue("@role", "User");
-                        cmd.ExecuteNonQuery();
-                        return true;
-                    }
-                }
+                await ApiService.PostAsync<UserResponse>("auth/register", registerRequest);
+                return true;
             }
             catch (Exception ex)
             {
@@ -116,30 +65,25 @@ namespace ShelterAppProduction.Services
             }
         }
 
-        public bool UpdateProfile(int userId, string fullName, string avatar)
+        public async Task<bool> UpdateProfile(int userId, string fullName, string avatar)
         {
             try
             {
-                using (var conn = DatabaseHelper.GetConnection())
+                var updateRequest = new UserUpdateRequest
                 {
-                    conn.Open();
-                    var query = "UPDATE Users SET FullName = @fullName, Avatar = @avatar WHERE Id = @userId";
-                    using (var cmd = new NpgsqlCommand(query, conn))
-                    {
-                        cmd.Parameters.AddWithValue("@fullName", fullName);
-                        cmd.Parameters.AddWithValue("@avatar", avatar ?? (object)DBNull.Value);
-                        cmd.Parameters.AddWithValue("@userId", userId);
-                        cmd.ExecuteNonQuery();
+                    Fullname = fullName,
+                    Avatar = avatar
+                };
 
-                        if (SessionManager.CurrentUser != null && SessionManager.CurrentUser.Id == userId)
-                        {
-                            SessionManager.CurrentUser.FullName = fullName;
-                            SessionManager.CurrentUser.Avatar = avatar;
-                        }
+                var userResponse = await ApiService.PutAsync<UserResponse>("users/me", updateRequest);
 
-                        return true;
-                    }
+                if (SessionManager.CurrentUser != null && SessionManager.CurrentUser.Id == userId)
+                {
+                    SessionManager.CurrentUser.FullName = userResponse.Fullname;
+                    SessionManager.CurrentUser.Avatar = userResponse.Avatar;
                 }
+
+                return true;
             }
             catch (Exception ex)
             {
@@ -148,42 +92,23 @@ namespace ShelterAppProduction.Services
             }
         }
 
-        public int? RegisterUser(string username, string password, string fullName, string role)
+        public async Task Logout()
         {
             try
             {
-                using (var conn = DatabaseHelper.GetConnection())
+                var token = ApiService.GetAuthToken();
+                if (!string.IsNullOrEmpty(token))
                 {
-                    conn.Open();
-
-                    var checkQuery = "SELECT COUNT(*) FROM Users WHERE Username = @username";
-                    using (var checkCmd = new NpgsqlCommand(checkQuery, conn))
-                    {
-                        checkCmd.Parameters.AddWithValue("@username", username);
-                        var count = Convert.ToInt32(checkCmd.ExecuteScalar());
-                        if (count > 0)
-                        {
-                            return null;
-                        }
-                    }
-
-                    var passwordHash = BCrypt.Net.BCrypt.HashPassword(password);
-                    var insertQuery = "INSERT INTO Users (Username, PasswordHash, Email, FullName, Role) VALUES (@username, @passwordHash, @email, @fullName, @role) RETURNING Id";
-                    using (var cmd = new NpgsqlCommand(insertQuery, conn))
-                    {
-                        cmd.Parameters.AddWithValue("@username", username);
-                        cmd.Parameters.AddWithValue("@passwordHash", passwordHash);
-                        cmd.Parameters.AddWithValue("@email", username + "@shelter.local");
-                        cmd.Parameters.AddWithValue("@fullName", fullName);
-                        cmd.Parameters.AddWithValue("@role", role);
-                        var userId = cmd.ExecuteScalar();
-                        return Convert.ToInt32(userId);
-                    }
+                    await ApiService.PostAsync<object>("auth/logout", new { token });
                 }
             }
             catch
             {
-                return null;
+            }
+            finally
+            {
+                ApiService.SetAuthToken(null);
+                SessionManager.CurrentUser = null;
             }
         }
     }

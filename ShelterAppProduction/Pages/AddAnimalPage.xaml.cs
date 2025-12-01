@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media.Imaging;
@@ -18,7 +19,7 @@ namespace ShelterAppProduction.Pages
         public AddAnimalPage()
         {
             InitializeComponent();
-            LoadEnclosures();
+            Loaded += async (s, e) => await LoadEnclosures();
         }
 
         public AddAnimalPage(Animal animal) : this()
@@ -98,11 +99,11 @@ namespace ShelterAppProduction.Pages
             }
         }
 
-        private void LoadEnclosures()
+        private async Task LoadEnclosures()
         {
             try
             {
-                var enclosures = animalRepository.GetAllEnclosures();
+                var enclosures = await animalRepository.GetAllEnclosures();
                 EnclosureComboBox.ItemsSource = enclosures;
             }
             catch (Exception ex)
@@ -111,7 +112,7 @@ namespace ShelterAppProduction.Pages
             }
         }
 
-        private void AddAnimalButton_Click(object sender, RoutedEventArgs e)
+        private async void AddAnimalButton_Click(object sender, RoutedEventArgs e)
         {
             StatusTextBlock.Text = "";
             StatusTextBlock.Foreground = System.Windows.Media.Brushes.Red;
@@ -187,13 +188,13 @@ namespace ShelterAppProduction.Pages
 
                 if (editingAnimal != null)
                 {
-                    success = animalRepository.UpdateAnimal(animal);
+                    success = await animalRepository.UpdateAnimal(animal);
                     message = success ? $"Животное '{animal.Name}' успешно обновлено!" : "Ошибка при обновлении животного в базе данных";
                 }
                 else
                 {
-                    success = animalRepository.AddAnimal(animal);
-                    message = success ? $"Животное '{animal.Name}' успешно добавлено!" : "Ошибка при добавлении животного в базу данных";
+                    success = await animalRepository.AddAnimal(animal);
+                    message = success ? $"Животное '{animal.Name}' успешно добавлено!" : "Ошибка при добавлении животного в базе данных";
                 }
 
                 if (success)

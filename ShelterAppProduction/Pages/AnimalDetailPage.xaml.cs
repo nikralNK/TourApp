@@ -32,12 +32,12 @@ namespace ShelterAppProduction.Pages
         {
             InitializeComponent();
             animalId = id;
-            LoadAnimalData();
+            Loaded += async (s, e) => await LoadAnimalData();
         }
 
-        private void LoadAnimalData()
+        private async System.Threading.Tasks.Task LoadAnimalData()
         {
-            animal = animalRepository.GetById(animalId);
+            animal = await animalRepository.GetById(animalId);
 
             if (animal != null)
             {
@@ -56,7 +56,7 @@ namespace ShelterAppProduction.Pages
                     LoadPhoto(animal.Photo);
                 }
 
-                if (SessionManager.IsAuthenticated && favoriteRepository.IsFavorite(SessionManager.CurrentUser.Id, animalId))
+                if (SessionManager.IsAuthenticated && await favoriteRepository.IsFavorite(SessionManager.CurrentUser.Id, animalId))
                 {
                     FavoriteButton.Content = "♥ Удалить из избранного";
                 }
@@ -67,7 +67,7 @@ namespace ShelterAppProduction.Pages
                 }
                 else if (SessionManager.IsAuthenticated && !string.IsNullOrWhiteSpace(SessionManager.CurrentUser.Email))
                 {
-                    CheckUserApplication();
+                    await CheckUserApplication();
                 }
 
                 if (SessionManager.IsAuthenticated && SessionManager.CurrentUser.Role.Equals("veterinarian", StringComparison.OrdinalIgnoreCase))
@@ -85,9 +85,9 @@ namespace ShelterAppProduction.Pages
             LoadMedicalRecords();
         }
 
-        private void CheckUserApplication()
+        private async System.Threading.Tasks.Task CheckUserApplication()
         {
-            var application = applicationRepository.GetApplicationByEmailAndAnimal(SessionManager.CurrentUser.Email, animalId);
+            var application = await applicationRepository.GetApplicationByEmailAndAnimal(SessionManager.CurrentUser.Email, animalId);
             if (application != null)
             {
                 ApplicationFormPanel.Visibility = Visibility.Collapsed;
@@ -144,7 +144,7 @@ namespace ShelterAppProduction.Pages
             Manager.MainFrame.GoBack();
         }
 
-        private void FavoriteButton_Click(object sender, RoutedEventArgs e)
+        private async void FavoriteButton_Click(object sender, RoutedEventArgs e)
         {
             if (!SessionManager.IsAuthenticated)
             {
@@ -154,19 +154,19 @@ namespace ShelterAppProduction.Pages
 
             if (FavoriteButton.Content.ToString().Contains("Добавить"))
             {
-                favoriteRepository.AddFavorite(SessionManager.CurrentUser.Id, animalId);
+                await favoriteRepository.AddFavorite(SessionManager.CurrentUser.Id, animalId);
                 FavoriteButton.Content = "♥ Удалить из избранного";
                 MessageBox.Show("Добавлено в избранное", "Успех", MessageBoxButton.OK, MessageBoxImage.Information);
             }
             else
             {
-                favoriteRepository.RemoveFavorite(SessionManager.CurrentUser.Id, animalId);
+                await favoriteRepository.RemoveFavorite(SessionManager.CurrentUser.Id, animalId);
                 FavoriteButton.Content = "♡ Добавить в избранное";
                 MessageBox.Show("Удалено из избранного", "Успех", MessageBoxButton.OK, MessageBoxImage.Information);
             }
         }
 
-        private void SubmitApplicationButton_Click(object sender, RoutedEventArgs e)
+        private async void SubmitApplicationButton_Click(object sender, RoutedEventArgs e)
         {
             ApplicationStatusTextBlock.Text = "";
             ApplicationStatusTextBlock.Foreground = System.Windows.Media.Brushes.Red;
@@ -182,7 +182,7 @@ namespace ShelterAppProduction.Pages
                 return;
             }
 
-            applicationRepository.CreateApplication(animalId, fullName, phone, email, comments);
+            await applicationRepository.CreateApplication(animalId, fullName, phone, email, comments);
 
             MessageBox.Show("Заявка успешно отправлена! Мы свяжемся с вами в ближайшее время.", "Успех", MessageBoxButton.OK, MessageBoxImage.Information);
 
@@ -191,7 +191,7 @@ namespace ShelterAppProduction.Pages
             EmailTextBox.Clear();
             CommentsTextBox.Clear();
 
-            CheckUserApplication();
+            await CheckUserApplication();
         }
 
         private void LoadPhoto(string path)

@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media.Imaging;
@@ -100,7 +101,7 @@ namespace ShelterAppProduction.Pages
             }
         }
 
-        private void SaveProfileButton_Click(object sender, RoutedEventArgs e)
+        private async void SaveProfileButton_Click(object sender, RoutedEventArgs e)
         {
             if (!SessionManager.IsAuthenticated)
                 return;
@@ -138,7 +139,7 @@ namespace ShelterAppProduction.Pages
                 }
             }
 
-            var result = authService.UpdateProfile(SessionManager.CurrentUser.Id, fullName, avatarPathToSave);
+            var result = await authService.UpdateProfile(SessionManager.CurrentUser.Id, fullName, avatarPathToSave);
 
             if (result)
             {

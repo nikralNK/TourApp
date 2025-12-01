@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -14,10 +15,10 @@ namespace ShelterAppProduction.Pages
         public FavoritesPage()
         {
             InitializeComponent();
-            LoadFavorites();
+            Loaded += async (s, e) => await LoadFavorites();
         }
 
-        private void LoadFavorites()
+        private async Task LoadFavorites()
         {
             if (!SessionManager.IsAuthenticated)
             {
@@ -26,7 +27,7 @@ namespace ShelterAppProduction.Pages
                 return;
             }
 
-            var favorites = favoriteRepository.GetFavoritesByUser(SessionManager.CurrentUser.Id);
+            var favorites = await favoriteRepository.GetFavoritesByUser(SessionManager.CurrentUser.Id);
 
             if (favorites.Count == 0)
             {

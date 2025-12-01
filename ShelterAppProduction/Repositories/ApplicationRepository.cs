@@ -1,97 +1,70 @@
-using Npgsql;
-using ShelterAppProduction.Database;
 using ShelterAppProduction.Models;
+using ShelterAppProduction.Services;
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace ShelterAppProduction.Repositories
 {
     public class ApplicationRepository
     {
-        public void CreateApplication(int animalId, string guardianFullName, string guardianPhone, string guardianEmail, string comments)
+        private readonly GuardianRepository _guardianRepository;
+
+        public ApplicationRepository()
         {
-            try
-            {
-                using (var conn = DatabaseHelper.GetConnection())
-                {
-                    conn.Open();
-
-                    int guardianId;
-                    var checkGuardian = "SELECT Id FROM Guardian WHERE Email = @email";
-                    using (var cmd = new NpgsqlCommand(checkGuardian, conn))
-                    {
-                        cmd.Parameters.AddWithValue("@email", guardianEmail);
-                        var result = cmd.ExecuteScalar();
-
-                        if (result != null)
-                        {
-                            guardianId = Convert.ToInt32(result);
-                        }
-                        else
-                        {
-                            var insertGuardian = "INSERT INTO Guardian (FullName, PhoneNumber, Email, RegistrationDate) VALUES (@fullName, @phone, @email, @date) RETURNING Id";
-                            using (var insertCmd = new NpgsqlCommand(insertGuardian, conn))
-                            {
-                                insertCmd.Parameters.AddWithValue("@fullName", guardianFullName);
-                                insertCmd.Parameters.AddWithValue("@phone", guardianPhone);
-                                insertCmd.Parameters.AddWithValue("@email", guardianEmail);
-                                insertCmd.Parameters.AddWithValue("@date", DateTime.Now);
-                                guardianId = Convert.ToInt32(insertCmd.ExecuteScalar());
-                            }
-                        }
-                    }
-
-                    var insertApplication = "INSERT INTO Application (IdAnimal, IdGuardian, ApplicationDate, Status, Comments) VALUES (@animalId, @guardianId, @date, @status, @comments)";
-                    using (var cmd = new NpgsqlCommand(insertApplication, conn))
-                    {
-                        cmd.Parameters.AddWithValue("@animalId", animalId);
-                        cmd.Parameters.AddWithValue("@guardianId", guardianId);
-                        cmd.Parameters.AddWithValue("@date", DateTime.Now);
-                        cmd.Parameters.AddWithValue("@status", "На рассмотрении");
-                        cmd.Parameters.AddWithValue("@comments", comments ?? "");
-                        cmd.ExecuteNonQuery();
-                    }
-                }
-            }
-            catch { }
+            _guardianRepository = new GuardianRepository();
         }
 
-        public List<Application> GetAllApplications()
+        public async Task CreateApplication(int animalId, string guardianFullName, string guardianPhone, string guardianEmail, string comments)
         {
-            var applications = new List<Application>();
             try
             {
-                using (var conn = DatabaseHelper.GetConnection())
-                {
-                    conn.Open();
-                    var query = @"SELECT a.Id, a.IdAnimal, a.IdGuardian, a.ApplicationDate, a.Status, a.Comments, g.FullName
-                                  FROM Application a
-                                  LEFT JOIN Guardian g ON a.IdGuardian = g.Id
-                                  ORDER BY a.ApplicationDate DESC";
-                    using (var cmd = new NpgsqlCommand(query, conn))
-                    using (var reader = cmd.ExecuteReader())
-                    {
-                        while (reader.Read())
-                        {
-                            var fullName = reader.IsDBNull(6) ? "" : reader.GetString(6);
-                            var shortName = GetShortName(fullName);
+                var guardianId = await _guardianRepository.GetOrCreateGuardian(guardianFullName, guardianPhone, guardianEmail);
 
-                            applications.Add(new Application
-                            {
-                                Id = reader.GetInt32(0),
-                                IdAnimal = reader.GetInt32(1),
-                                IdGuardian = reader.GetInt32(2),
-                                ApplicationDate = reader.GetDateTime(3),
-                                Status = reader.IsDBNull(4) ? "На рассмотрении" : reader.GetString(4),
-                                Comments = reader.IsDBNull(5) ? null : reader.GetString(5),
-                                GuardianShortName = shortName
-                            });
-                        }
-                    }
-                }
+                var request = new ApplicationCreateRequest
+                {
+                    IdAnimal = animalId,
+                    IdGuardian = guardianId,
+                    Comments = comments
+                };
+
+                await ApiService.PostAsync<ApplicationResponse>("applications/", request);
             }
-            catch { }
-            return applications;
+            catch
+            {
+            }
+        }
+
+        public async Task<List<Application>> GetAllApplications()
+        {
+            try
+            {
+                var response = await ApiService.GetAsync<List<ApplicationResponse>>("applications/");
+                var guardians = await _guardianRepository.GetAllGuardians();
+
+                return response.Select(app =>
+                {
+                    var guardian = guardians.FirstOrDefault(g => g.Id == app.IdGuardian);
+                    var fullName = guardian?.FullName ?? "";
+                    var shortName = GetShortName(fullName);
+
+                    return new Application
+                    {
+                        Id = app.Id,
+                        IdAnimal = app.IdAnimal,
+                        IdGuardian = app.IdGuardian,
+                        ApplicationDate = app.ApplicationDate,
+                        Status = app.Status ?? "На рассмотрении",
+                        Comments = app.Comments,
+                        GuardianShortName = shortName
+                    };
+                }).ToList();
+            }
+            catch
+            {
+                return new List<Application>();
+            }
         }
 
         private string GetShortName(string fullName)
@@ -110,62 +83,56 @@ namespace ShelterAppProduction.Repositories
             return $"{parts[0]} {parts[1][0]}. {parts[2][0]}.";
         }
 
-        public void UpdateApplicationStatus(int applicationId, string status)
+        public async Task UpdateApplicationStatus(int applicationId, string status)
         {
             try
             {
-                using (var conn = DatabaseHelper.GetConnection())
+                var request = new ApplicationUpdateRequest
                 {
-                    conn.Open();
-                    var query = "UPDATE Application SET Status = @status WHERE Id = @id";
-                    using (var cmd = new NpgsqlCommand(query, conn))
-                    {
-                        cmd.Parameters.AddWithValue("@status", status);
-                        cmd.Parameters.AddWithValue("@id", applicationId);
-                        cmd.ExecuteNonQuery();
-                    }
-                }
+                    Status = status
+                };
+
+                await ApiService.PutAsync<ApplicationResponse>($"applications/{applicationId}", request);
             }
-            catch { }
+            catch
+            {
+            }
         }
 
-        public Application GetApplicationByEmailAndAnimal(string email, int animalId)
+        public async Task<Application> GetApplicationByEmailAndAnimal(string email, int animalId)
         {
             try
             {
-                using (var conn = DatabaseHelper.GetConnection())
+                var guardians = await _guardianRepository.GetAllGuardians();
+                var guardian = guardians.FirstOrDefault(g => g.Email == email);
+
+                if (guardian == null)
+                    return null;
+
+                var applications = await ApiService.GetAsync<List<ApplicationResponse>>("applications/");
+
+                var application = applications
+                    .Where(a => a.IdGuardian == guardian.Id && a.IdAnimal == animalId)
+                    .OrderByDescending(a => a.ApplicationDate)
+                    .FirstOrDefault();
+
+                if (application == null)
+                    return null;
+
+                return new Application
                 {
-                    conn.Open();
-                    var query = @"SELECT a.Id, a.IdAnimal, a.IdGuardian, a.ApplicationDate, a.Status, a.Comments
-                                  FROM Application a
-                                  LEFT JOIN Guardian g ON a.IdGuardian = g.Id
-                                  WHERE g.Email = @email AND a.IdAnimal = @animalId
-                                  ORDER BY a.ApplicationDate DESC
-                                  LIMIT 1";
-                    using (var cmd = new NpgsqlCommand(query, conn))
-                    {
-                        cmd.Parameters.AddWithValue("@email", email);
-                        cmd.Parameters.AddWithValue("@animalId", animalId);
-                        using (var reader = cmd.ExecuteReader())
-                        {
-                            if (reader.Read())
-                            {
-                                return new Application
-                                {
-                                    Id = reader.GetInt32(0),
-                                    IdAnimal = reader.GetInt32(1),
-                                    IdGuardian = reader.GetInt32(2),
-                                    ApplicationDate = reader.GetDateTime(3),
-                                    Status = reader.IsDBNull(4) ? "На рассмотрении" : reader.GetString(4),
-                                    Comments = reader.IsDBNull(5) ? null : reader.GetString(5)
-                                };
-                            }
-                        }
-                    }
-                }
+                    Id = application.Id,
+                    IdAnimal = application.IdAnimal,
+                    IdGuardian = application.IdGuardian,
+                    ApplicationDate = application.ApplicationDate,
+                    Status = application.Status ?? "На рассмотрении",
+                    Comments = application.Comments
+                };
             }
-            catch { }
-            return null;
+            catch
+            {
+                return null;
+            }
         }
     }
 }

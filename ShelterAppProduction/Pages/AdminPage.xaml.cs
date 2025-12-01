@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -23,18 +24,18 @@ namespace ShelterAppProduction.Pages
                 return;
             }
 
-            LoadApplications();
+            Loaded += async (s, e) => await LoadApplications();
         }
 
-        private void LoadApplications()
+        private async Task LoadApplications()
         {
-            var applications = applicationRepository.GetAllApplications();
+            var applications = await applicationRepository.GetAllApplications();
             ApplicationsDataGrid.ItemsSource = applications;
         }
 
-        private void RefreshButton_Click(object sender, RoutedEventArgs e)
+        private async void RefreshButton_Click(object sender, RoutedEventArgs e)
         {
-            LoadApplications();
+            await LoadApplications();
         }
 
         private void AddAnimalButton_Click(object sender, RoutedEventArgs e)
@@ -42,7 +43,7 @@ namespace ShelterAppProduction.Pages
             Manager.MainFrame.Navigate(new AddAnimalPage());
         }
 
-        private void ApproveButton_Click(object sender, RoutedEventArgs e)
+        private async void ApproveButton_Click(object sender, RoutedEventArgs e)
         {
             var button = sender as Button;
             var applicationId = (int)button.Tag;
@@ -55,13 +56,13 @@ namespace ShelterAppProduction.Pages
 
             if (result == MessageBoxResult.Yes)
             {
-                applicationRepository.UpdateApplicationStatus(applicationId, "Одобрена");
-                LoadApplications();
+                await applicationRepository.UpdateApplicationStatus(applicationId, "Одобрена");
+                await LoadApplications();
                 MessageBox.Show("Заявка одобрена", "Успех", MessageBoxButton.OK, MessageBoxImage.Information);
             }
         }
 
-        private void RejectButton_Click(object sender, RoutedEventArgs e)
+        private async void RejectButton_Click(object sender, RoutedEventArgs e)
         {
             var button = sender as Button;
             var applicationId = (int)button.Tag;
@@ -74,8 +75,8 @@ namespace ShelterAppProduction.Pages
 
             if (result == MessageBoxResult.Yes)
             {
-                applicationRepository.UpdateApplicationStatus(applicationId, "Отклонена");
-                LoadApplications();
+                await applicationRepository.UpdateApplicationStatus(applicationId, "Отклонена");
+                await LoadApplications();
                 MessageBox.Show("Заявка отклонена", "Успех", MessageBoxButton.OK, MessageBoxImage.Information);
             }
         }

@@ -12,7 +12,7 @@ namespace ShelterAppProduction
             InitializeComponent();
         }
 
-        private void RegisterButton_Click(object sender, RoutedEventArgs e)
+        private async void RegisterButton_Click(object sender, RoutedEventArgs e)
         {
             StatusTextBlock.Text = "";
 
@@ -64,7 +64,7 @@ namespace ShelterAppProduction
                 return;
             }
 
-            var result = authService.Register(
+            var result = await authService.Register(
                 UsernameTextBox.Text.Trim(),
                 PasswordBox.Password,
                 EmailTextBox.Text.Trim(),

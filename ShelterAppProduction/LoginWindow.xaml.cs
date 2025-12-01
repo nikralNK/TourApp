@@ -12,7 +12,7 @@ namespace ShelterAppProduction
             InitializeComponent();
         }
 
-        private void LoginButton_Click(object sender, RoutedEventArgs e)
+        private async void LoginButton_Click(object sender, RoutedEventArgs e)
         {
             ErrorTextBlock.Text = "";
 
@@ -25,7 +25,7 @@ namespace ShelterAppProduction
                 return;
             }
 
-            var user = authService.Login(username, password);
+            var user = await authService.Login(username, password);
 
             if (user != null)
             {
@@ -49,18 +49,7 @@ namespace ShelterAppProduction
                 return;
             }
 
-            var result = MessageBox.Show(
-                $"Сбросить пароль для пользователя {username} на 'admin'?",
-                "Сброс пароля",
-                MessageBoxButton.YesNo,
-                MessageBoxImage.Question);
-
-            if (result == MessageBoxResult.Yes)
-            {
-                authService.ResetPassword(username, "admin");
-                MessageBox.Show("Пароль успешно сброшен на 'admin'", "Успех", MessageBoxButton.OK, MessageBoxImage.Information);
-                ErrorTextBlock.Text = "";
-            }
+            MessageBox.Show("Функция сброса пароля доступна только через API администратора", "Информация", MessageBoxButton.OK, MessageBoxImage.Information);
         }
 
         private void RegisterButton_Click(object sender, RoutedEventArgs e)

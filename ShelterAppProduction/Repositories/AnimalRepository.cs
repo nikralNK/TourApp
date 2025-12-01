@@ -1,132 +1,97 @@
-using Npgsql;
-using ShelterAppProduction.Database;
 using ShelterAppProduction.Models;
+using ShelterAppProduction.Services;
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace ShelterAppProduction.Repositories
 {
     public class AnimalRepository
     {
-        public List<Animal> GetAll()
+        public async Task<List<Animal>> GetAll()
         {
-            var animals = new List<Animal>();
             try
             {
-                using (var conn = DatabaseHelper.GetConnection())
-                {
-                    conn.Open();
-                    var query = "SELECT * FROM Animal";
-                    using (var cmd = new NpgsqlCommand(query, conn))
-                    using (var reader = cmd.ExecuteReader())
-                    {
-                        while (reader.Read())
-                        {
-                            animals.Add(MapAnimal(reader));
-                        }
-                    }
-                }
+                var response = await ApiService.GetAsync<List<AnimalResponse>>("animals/");
+                return response.Select(MapFromApiResponse).ToList();
             }
-            catch { }
-            return animals;
+            catch
+            {
+                return new List<Animal>();
+            }
         }
 
-        public List<Animal> GetFiltered(string type = null, string gender = null, string size = null, int? minAge = null, int? maxAge = null)
-        {
-            var animals = new List<Animal>();
-            try
-            {
-                using (var conn = DatabaseHelper.GetConnection())
-                {
-                    conn.Open();
-                    var query = "SELECT * FROM Animal WHERE 1=1";
-
-                    if (!string.IsNullOrEmpty(type))
-                        query += " AND Type = @type";
-                    if (!string.IsNullOrEmpty(gender))
-                        query += " AND Gender = @gender";
-                    if (!string.IsNullOrEmpty(size))
-                        query += " AND Size = @size";
-
-                    using (var cmd = new NpgsqlCommand(query, conn))
-                    {
-                        if (!string.IsNullOrEmpty(type))
-                            cmd.Parameters.AddWithValue("@type", type);
-                        if (!string.IsNullOrEmpty(gender))
-                            cmd.Parameters.AddWithValue("@gender", gender);
-                        if (!string.IsNullOrEmpty(size))
-                            cmd.Parameters.AddWithValue("@size", size);
-
-                        using (var reader = cmd.ExecuteReader())
-                        {
-                            while (reader.Read())
-                            {
-                                var animal = MapAnimal(reader);
-                                if (minAge.HasValue && animal.Age < minAge.Value)
-                                    continue;
-                                if (maxAge.HasValue && animal.Age > maxAge.Value)
-                                    continue;
-                                animals.Add(animal);
-                            }
-                        }
-                    }
-                }
-            }
-            catch { }
-            return animals;
-        }
-
-        public Animal GetById(int id)
+        public async Task<List<Animal>> GetFiltered(string type = null, string gender = null, string size = null, int? minAge = null, int? maxAge = null)
         {
             try
             {
-                using (var conn = DatabaseHelper.GetConnection())
-                {
-                    conn.Open();
-                    var query = "SELECT * FROM Animal WHERE Id = @id";
-                    using (var cmd = new NpgsqlCommand(query, conn))
-                    {
-                        cmd.Parameters.AddWithValue("@id", id);
-                        using (var reader = cmd.ExecuteReader())
-                        {
-                            if (reader.Read())
-                            {
-                                return MapAnimal(reader);
-                            }
-                        }
-                    }
-                }
-            }
-            catch { }
-            return null;
-        }
+                var queryParams = new List<string>();
+                if (!string.IsNullOrEmpty(type))
+                    queryParams.Add($"type={Uri.EscapeDataString(type)}");
+                if (!string.IsNullOrEmpty(gender))
+                    queryParams.Add($"gender={Uri.EscapeDataString(gender)}");
+                if (!string.IsNullOrEmpty(size))
+                    queryParams.Add($"size={Uri.EscapeDataString(size)}");
 
-        public bool AddAnimal(Animal animal)
-        {
-            try
-            {
-                using (var conn = DatabaseHelper.GetConnection())
-                {
-                    conn.Open();
-                    var query = @"INSERT INTO Animal (Name, Type, Breed, DateOfBirth, IdEnclosure, CurrentStatus, Gender, Size, Temperament, Photo)
-                                  VALUES (@name, @type, @breed, @dateOfBirth, @idEnclosure, @currentStatus, @gender, @size, @temperament, @photo)";
-                    using (var cmd = new NpgsqlCommand(query, conn))
-                    {
-                        cmd.Parameters.AddWithValue("@name", animal.Name);
-                        cmd.Parameters.AddWithValue("@type", animal.Type ?? (object)DBNull.Value);
-                        cmd.Parameters.AddWithValue("@breed", animal.Breed ?? (object)DBNull.Value);
-                        cmd.Parameters.AddWithValue("@dateOfBirth", animal.DateOfBirth);
-                        cmd.Parameters.AddWithValue("@idEnclosure", animal.IdEnclosure ?? (object)DBNull.Value);
-                        cmd.Parameters.AddWithValue("@currentStatus", animal.CurrentStatus ?? "Доступен");
-                        cmd.Parameters.AddWithValue("@gender", animal.Gender ?? (object)DBNull.Value);
-                        cmd.Parameters.AddWithValue("@size", animal.Size ?? (object)DBNull.Value);
-                        cmd.Parameters.AddWithValue("@temperament", animal.Temperament ?? (object)DBNull.Value);
-                        cmd.Parameters.AddWithValue("@photo", animal.Photo ?? (object)DBNull.Value);
+                var endpoint = "animals/";
+                if (queryParams.Count > 0)
+                    endpoint += "?" + string.Join("&", queryParams);
 
-                        cmd.ExecuteNonQuery();
+                var response = await ApiService.GetAsync<List<AnimalResponse>>(endpoint);
+                var animals = response.Select(MapFromApiResponse).ToList();
+
+                if (minAge.HasValue || maxAge.HasValue)
+                {
+                    animals = animals.Where(a =>
+                    {
+                        if (minAge.HasValue && a.Age < minAge.Value)
+                            return false;
+                        if (maxAge.HasValue && a.Age > maxAge.Value)
+                            return false;
                         return true;
-                    }
+                    }).ToList();
                 }
+
+                return animals;
+            }
+            catch
+            {
+                return new List<Animal>();
+            }
+        }
+
+        public async Task<Animal> GetById(int id)
+        {
+            try
+            {
+                var response = await ApiService.GetAsync<AnimalResponse>($"animals/{id}");
+                return MapFromApiResponse(response);
+            }
+            catch
+            {
+                return null;
+            }
+        }
+
+        public async Task<bool> AddAnimal(Animal animal)
+        {
+            try
+            {
+                var request = new AnimalCreateRequest
+                {
+                    Name = animal.Name,
+                    Type = animal.Type,
+                    Breed = animal.Breed,
+                    DateOfBirth = animal.DateOfBirth,
+                    Gender = animal.Gender,
+                    Size = animal.Size,
+                    Temperament = animal.Temperament,
+                    IdEnclosure = animal.IdEnclosure
+                };
+
+                await ApiService.PostAsync<AnimalResponse>("animals/", request);
+                return true;
             }
             catch
             {
@@ -134,34 +99,27 @@ namespace ShelterAppProduction.Repositories
             }
         }
 
-        public bool UpdateAnimal(Animal animal)
+        public async Task<bool> UpdateAnimal(Animal animal)
         {
             try
             {
-                using (var conn = DatabaseHelper.GetConnection())
+                var request = new AnimalUpdateRequest
                 {
-                    conn.Open();
-                    var query = @"UPDATE Animal SET Name = @name, Type = @type, Breed = @breed, DateOfBirth = @dateOfBirth,
-                                  IdEnclosure = @idEnclosure, CurrentStatus = @currentStatus, Gender = @gender,
-                                  Size = @size, Temperament = @temperament, Photo = @photo WHERE Id = @id";
-                    using (var cmd = new NpgsqlCommand(query, conn))
-                    {
-                        cmd.Parameters.AddWithValue("@id", animal.Id);
-                        cmd.Parameters.AddWithValue("@name", animal.Name);
-                        cmd.Parameters.AddWithValue("@type", animal.Type ?? (object)DBNull.Value);
-                        cmd.Parameters.AddWithValue("@breed", animal.Breed ?? (object)DBNull.Value);
-                        cmd.Parameters.AddWithValue("@dateOfBirth", animal.DateOfBirth);
-                        cmd.Parameters.AddWithValue("@idEnclosure", animal.IdEnclosure ?? (object)DBNull.Value);
-                        cmd.Parameters.AddWithValue("@currentStatus", animal.CurrentStatus ?? "Доступен");
-                        cmd.Parameters.AddWithValue("@gender", animal.Gender ?? (object)DBNull.Value);
-                        cmd.Parameters.AddWithValue("@size", animal.Size ?? (object)DBNull.Value);
-                        cmd.Parameters.AddWithValue("@temperament", animal.Temperament ?? (object)DBNull.Value);
-                        cmd.Parameters.AddWithValue("@photo", animal.Photo ?? (object)DBNull.Value);
+                    Name = animal.Name,
+                    Type = animal.Type,
+                    Breed = animal.Breed,
+                    DateOfBirth = animal.DateOfBirth,
+                    Gender = animal.Gender,
+                    Size = animal.Size,
+                    Temperament = animal.Temperament,
+                    IdEnclosure = animal.IdEnclosure,
+                    IdGuardian = animal.IdGuardian,
+                    CurrentStatus = animal.CurrentStatus,
+                    Photo = animal.Photo
+                };
 
-                        cmd.ExecuteNonQuery();
-                        return true;
-                    }
-                }
+                await ApiService.PutAsync<AnimalResponse>($"animals/{animal.Id}", request);
+                return true;
             }
             catch
             {
@@ -169,52 +127,22 @@ namespace ShelterAppProduction.Repositories
             }
         }
 
-        public List<Enclosure> GetAllEnclosures()
-        {
-            var enclosures = new List<Enclosure>();
-            try
-            {
-                using (var conn = DatabaseHelper.GetConnection())
-                {
-                    conn.Open();
-                    var query = "SELECT * FROM Enclosure";
-                    using (var cmd = new NpgsqlCommand(query, conn))
-                    using (var reader = cmd.ExecuteReader())
-                    {
-                        while (reader.Read())
-                        {
-                            enclosures.Add(new Enclosure
-                            {
-                                Id = reader.GetInt32(0),
-                                Name = reader.GetString(1),
-                                Type = reader.IsDBNull(2) ? null : reader.GetString(2),
-                                Capacity = reader.IsDBNull(3) ? (int?)null : reader.GetInt32(3),
-                                Location = reader.IsDBNull(4) ? null : reader.GetString(4)
-                            });
-                        }
-                    }
-                }
-            }
-            catch { }
-            return enclosures;
-        }
-
-        private Animal MapAnimal(NpgsqlDataReader reader)
+        private Animal MapFromApiResponse(AnimalResponse response)
         {
             return new Animal
             {
-                Id = reader.GetInt32(0),
-                Name = reader.GetString(1),
-                Type = reader.IsDBNull(2) ? null : reader.GetString(2),
-                Breed = reader.IsDBNull(3) ? null : reader.GetString(3),
-                DateOfBirth = reader.IsDBNull(4) ? DateTime.Today : reader.GetDateTime(4),
-                IdEnclosure = reader.IsDBNull(5) ? (int?)null : reader.GetInt32(5),
-                IdGuardian = reader.IsDBNull(6) ? (int?)null : reader.GetInt32(6),
-                CurrentStatus = reader.IsDBNull(7) ? "Доступен" : reader.GetString(7),
-                Gender = reader.IsDBNull(8) ? null : reader.GetString(8),
-                Size = reader.IsDBNull(9) ? null : reader.GetString(9),
-                Temperament = reader.IsDBNull(10) ? null : reader.GetString(10),
-                Photo = reader.IsDBNull(11) ? null : reader.GetString(11)
+                Id = response.Id,
+                Name = response.Name,
+                Type = response.Type,
+                Breed = response.Breed,
+                DateOfBirth = response.DateOfBirth ?? DateTime.Today,
+                IdEnclosure = response.IdEnclosure,
+                IdGuardian = response.IdGuardian,
+                CurrentStatus = response.CurrentStatus ?? "Доступен",
+                Gender = response.Gender,
+                Size = response.Size,
+                Temperament = response.Temperament,
+                Photo = response.Photo
             };
         }
     }

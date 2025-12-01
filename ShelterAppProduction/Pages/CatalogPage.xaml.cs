@@ -14,10 +14,10 @@ namespace ShelterAppProduction.Pages
         public CatalogPage()
         {
             InitializeComponent();
-            LoadAnimals();
+            Loaded += async (s, e) => await LoadAnimals();
         }
 
-        private void LoadAnimals()
+        private async System.Threading.Tasks.Task LoadAnimals()
         {
             var type = (TypeComboBox.SelectedItem as ComboBoxItem)?.Content.ToString();
             var gender = (GenderComboBox.SelectedItem as ComboBoxItem)?.Content.ToString();
@@ -27,24 +27,24 @@ namespace ShelterAppProduction.Pages
             gender = gender == "Все" ? null : gender;
             size = size == "Все" ? null : size;
 
-            var animals = animalRepository.GetFiltered(type, gender, size);
+            var animals = await animalRepository.GetFiltered(type, gender, size);
             AnimalsItemsControl.ItemsSource = animals.Where(a => a.CurrentStatus == "Доступен");
         }
 
-        private void FilterChanged(object sender, SelectionChangedEventArgs e)
+        private async void FilterChanged(object sender, SelectionChangedEventArgs e)
         {
             if (AnimalsItemsControl != null)
             {
-                LoadAnimals();
+                await LoadAnimals();
             }
         }
 
-        private void ResetFiltersButton_Click(object sender, RoutedEventArgs e)
+        private async void ResetFiltersButton_Click(object sender, RoutedEventArgs e)
         {
             TypeComboBox.SelectedIndex = 0;
             GenderComboBox.SelectedIndex = 0;
             SizeComboBox.SelectedIndex = 0;
-            LoadAnimals();
+            await LoadAnimals();
         }
 
         private void DetailsButton_Click(object sender, RoutedEventArgs e)
