@@ -1,97 +1,77 @@
-using Npgsql;
-using ShelterAppProduction.Database;
 using ShelterAppProduction.Models;
-using System;
+using ShelterAppProduction.Services;
 using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace ShelterAppProduction.Repositories
 {
     public class VeterinarianRepository
     {
-        public List<Veterinarian> GetAll()
+        public async Task<List<Veterinarian>> GetAll()
         {
-            var veterinarians = new List<Veterinarian>();
             try
             {
-                using (var conn = DatabaseHelper.GetConnection())
-                {
-                    conn.Open();
-                    var query = "SELECT * FROM Veterinarian";
-                    using (var cmd = new NpgsqlCommand(query, conn))
-                    using (var reader = cmd.ExecuteReader())
-                    {
-                        while (reader.Read())
-                        {
-                            veterinarians.Add(new Veterinarian
-                            {
-                                Id = reader.GetInt32(0),
-                                FullName = reader.GetString(1),
-                                Specialization = reader.IsDBNull(2) ? null : reader.GetString(2),
-                                PhoneNumber = reader.IsDBNull(3) ? null : reader.GetString(3),
-                                LicenseNumber = reader.IsDBNull(4) ? null : reader.GetString(4),
-                                UserId = reader.IsDBNull(5) ? (int?)null : reader.GetInt32(5)
-                            });
-                        }
-                    }
-                }
+                var response = await ApiService.GetAsync<List<VeterinarianResponse>>("veterinarians/");
+                return response.Select(MapFromApiResponse).ToList();
             }
-            catch { }
-            return veterinarians;
+            catch
+            {
+                return new List<Veterinarian>();
+            }
         }
 
-        public Veterinarian GetById(int id)
+        public async Task<Veterinarian> GetById(int id)
         {
             try
             {
-                using (var conn = DatabaseHelper.GetConnection())
-                {
-                    conn.Open();
-                    var query = "SELECT * FROM Veterinarian WHERE Id = @id";
-                    using (var cmd = new NpgsqlCommand(query, conn))
-                    {
-                        cmd.Parameters.AddWithValue("@id", id);
-                        using (var reader = cmd.ExecuteReader())
-                        {
-                            if (reader.Read())
-                            {
-                                return new Veterinarian
-                                {
-                                    Id = reader.GetInt32(0),
-                                    FullName = reader.GetString(1),
-                                    Specialization = reader.IsDBNull(2) ? null : reader.GetString(2),
-                                    PhoneNumber = reader.IsDBNull(3) ? null : reader.GetString(3),
-                                    LicenseNumber = reader.IsDBNull(4) ? null : reader.GetString(4),
-                                    UserId = reader.IsDBNull(5) ? (int?)null : reader.GetInt32(5)
-                                };
-                            }
-                        }
-                    }
-                }
+                var response = await ApiService.GetAsync<VeterinarianResponse>($"veterinarians/{id}");
+                return MapFromApiResponse(response);
             }
-            catch { }
-            return null;
+            catch
+            {
+                return null;
+            }
         }
 
-        public bool AddVeterinarian(Veterinarian veterinarian)
+        public async Task<Veterinarian> AddVeterinarian(string username, string password, string email, string fullName, string specialization, string phoneNumber, string licenseNumber)
         {
             try
             {
-                using (var conn = DatabaseHelper.GetConnection())
+                var request = new VeterinarianCreateRequest
                 {
-                    conn.Open();
-                    var query = @"INSERT INTO Veterinarian (FullName, Specialization, PhoneNumber, LicenseNumber, UserId)
-                                  VALUES (@fullName, @specialization, @phoneNumber, @licenseNumber, @userId)";
-                    using (var cmd = new NpgsqlCommand(query, conn))
-                    {
-                        cmd.Parameters.AddWithValue("@fullName", veterinarian.FullName);
-                        cmd.Parameters.AddWithValue("@specialization", veterinarian.Specialization ?? (object)DBNull.Value);
-                        cmd.Parameters.AddWithValue("@phoneNumber", veterinarian.PhoneNumber ?? (object)DBNull.Value);
-                        cmd.Parameters.AddWithValue("@licenseNumber", veterinarian.LicenseNumber ?? (object)DBNull.Value);
-                        cmd.Parameters.AddWithValue("@userId", veterinarian.UserId.HasValue ? (object)veterinarian.UserId.Value : DBNull.Value);
-                        cmd.ExecuteNonQuery();
-                        return true;
-                    }
-                }
+                    Username = username,
+                    Password = password,
+                    Email = email,
+                    Fullname = fullName,
+                    Specialization = specialization,
+                    Phonenumber = phoneNumber,
+                    Licensenumber = licenseNumber
+                };
+
+                var response = await ApiService.PostAsync<VeterinarianResponse>("veterinarians/", request);
+                return MapFromApiResponse(response);
+            }
+            catch
+            {
+                return null;
+            }
+        }
+
+        public async Task<bool> UpdateVeterinarian(int id, string fullName, string specialization, string phoneNumber, string licenseNumber)
+        {
+            try
+            {
+                var request = new VeterinarianUpdateRequest
+                {
+                    Fullname = fullName,
+                    Specialization = specialization,
+                    Phonenumber = phoneNumber,
+                    Licensenumber = licenseNumber
+                };
+
+                await ApiService.PutAsync<VeterinarianResponse>($"veterinarians/{id}", request);
+                return true;
             }
             catch
             {
@@ -99,27 +79,12 @@ namespace ShelterAppProduction.Repositories
             }
         }
 
-        public bool UpdateVeterinarian(Veterinarian veterinarian)
+        public async Task<bool> DeleteVeterinarian(int id)
         {
             try
             {
-                using (var conn = DatabaseHelper.GetConnection())
-                {
-                    conn.Open();
-                    var query = @"UPDATE Veterinarian SET FullName = @fullName, Specialization = @specialization,
-                                  PhoneNumber = @phoneNumber, LicenseNumber = @licenseNumber, UserId = @userId WHERE Id = @id";
-                    using (var cmd = new NpgsqlCommand(query, conn))
-                    {
-                        cmd.Parameters.AddWithValue("@id", veterinarian.Id);
-                        cmd.Parameters.AddWithValue("@fullName", veterinarian.FullName);
-                        cmd.Parameters.AddWithValue("@specialization", veterinarian.Specialization ?? (object)DBNull.Value);
-                        cmd.Parameters.AddWithValue("@phoneNumber", veterinarian.PhoneNumber ?? (object)DBNull.Value);
-                        cmd.Parameters.AddWithValue("@licenseNumber", veterinarian.LicenseNumber ?? (object)DBNull.Value);
-                        cmd.Parameters.AddWithValue("@userId", veterinarian.UserId.HasValue ? (object)veterinarian.UserId.Value : DBNull.Value);
-                        cmd.ExecuteNonQuery();
-                        return true;
-                    }
-                }
+                await ApiService.DeleteAsync($"veterinarians/{id}");
+                return true;
             }
             catch
             {
@@ -127,26 +92,17 @@ namespace ShelterAppProduction.Repositories
             }
         }
 
-        public bool DeleteVeterinarian(int id)
+        private Veterinarian MapFromApiResponse(VeterinarianResponse response)
         {
-            try
+            return new Veterinarian
             {
-                using (var conn = DatabaseHelper.GetConnection())
-                {
-                    conn.Open();
-                    var query = "DELETE FROM Veterinarian WHERE Id = @id";
-                    using (var cmd = new NpgsqlCommand(query, conn))
-                    {
-                        cmd.Parameters.AddWithValue("@id", id);
-                        cmd.ExecuteNonQuery();
-                        return true;
-                    }
-                }
-            }
-            catch
-            {
-                return false;
-            }
+                Id = response.Id,
+                FullName = response.Fullname,
+                Specialization = response.Specialization,
+                PhoneNumber = response.Phonenumber,
+                LicenseNumber = response.Licensenumber,
+                UserId = response.Iduser
+            };
         }
     }
 }

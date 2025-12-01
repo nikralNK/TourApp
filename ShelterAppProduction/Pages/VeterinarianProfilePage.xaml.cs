@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using ShelterAppProduction.Models;
@@ -24,14 +25,14 @@ namespace ShelterAppProduction.Pages
             veterinarianId = id;
             TitleTextBlock.Text = "Редактировать ветеринара";
             SaveButton.Content = "Сохранить";
-            LoadVeterinarianData();
+            Loaded += async (s, e) => await LoadVeterinarianData();
         }
 
-        private void LoadVeterinarianData()
+        private async Task LoadVeterinarianData()
         {
             if (veterinarianId.HasValue)
             {
-                var veterinarian = veterinarianRepository.GetById(veterinarianId.Value);
+                var veterinarian = await veterinarianRepository.GetById(veterinarianId.Value);
                 if (veterinarian != null)
                 {
                     FullNameTextBox.Text = veterinarian.FullName;
@@ -55,7 +56,7 @@ namespace ShelterAppProduction.Pages
             }
         }
 
-        private void SaveButton_Click(object sender, RoutedEventArgs e)
+        private async void SaveButton_Click(object sender, RoutedEventArgs e)
         {
             StatusTextBlock.Text = "";
             StatusTextBlock.Foreground = System.Windows.Media.Brushes.Red;
@@ -66,8 +67,38 @@ namespace ShelterAppProduction.Pages
                 return;
             }
 
-            bool needCreateAccount = false;
-            if (!veterinarianId.HasValue || (veterinarianId.HasValue && AccountPanel.Visibility == Visibility.Visible))
+            string fullName = FullNameTextBox.Text.Trim();
+            string specialization = string.IsNullOrWhiteSpace(SpecializationTextBox.Text) ? null : SpecializationTextBox.Text.Trim();
+            string phoneNumber = string.IsNullOrWhiteSpace(PhoneNumberTextBox.Text) ? null : PhoneNumberTextBox.Text.Trim();
+            string licenseNumber = string.IsNullOrWhiteSpace(LicenseNumberTextBox.Text) ? null : LicenseNumberTextBox.Text.Trim();
+
+            bool success = false;
+
+            if (veterinarianId.HasValue)
+            {
+                var existingVet = await veterinarianRepository.GetById(veterinarianId.Value);
+
+                if (existingVet != null && !existingVet.UserId.HasValue && AccountPanel.Visibility == Visibility.Visible)
+                {
+                    if (string.IsNullOrWhiteSpace(UsernameTextBox.Text))
+                    {
+                        StatusTextBlock.Text = "Введите логин";
+                        return;
+                    }
+
+                    if (string.IsNullOrWhiteSpace(PasswordBox.Password))
+                    {
+                        StatusTextBlock.Text = "Введите пароль";
+                        return;
+                    }
+
+                    MessageBox.Show("Функция создания аккаунта для существующего ветеринара временно недоступна через API", "Информация", MessageBoxButton.OK, MessageBoxImage.Information);
+                    return;
+                }
+
+                success = await veterinarianRepository.UpdateVeterinarian(veterinarianId.Value, fullName, specialization, phoneNumber, licenseNumber);
+            }
+            else
             {
                 if (string.IsNullOrWhiteSpace(UsernameTextBox.Text))
                 {
@@ -80,57 +111,18 @@ namespace ShelterAppProduction.Pages
                     StatusTextBlock.Text = "Введите пароль";
                     return;
                 }
-                needCreateAccount = true;
-            }
 
-            var veterinarian = new Veterinarian
-            {
-                FullName = FullNameTextBox.Text.Trim(),
-                Specialization = string.IsNullOrWhiteSpace(SpecializationTextBox.Text) ? null : SpecializationTextBox.Text.Trim(),
-                PhoneNumber = string.IsNullOrWhiteSpace(PhoneNumberTextBox.Text) ? null : PhoneNumberTextBox.Text.Trim(),
-                LicenseNumber = string.IsNullOrWhiteSpace(LicenseNumberTextBox.Text) ? null : LicenseNumberTextBox.Text.Trim()
-            };
+                var veterinarian = await veterinarianRepository.AddVeterinarian(
+                    UsernameTextBox.Text.Trim(),
+                    PasswordBox.Password,
+                    "",
+                    fullName,
+                    specialization,
+                    phoneNumber,
+                    licenseNumber
+                );
 
-            bool success;
-            if (veterinarianId.HasValue)
-            {
-                veterinarian.Id = veterinarianId.Value;
-                var existingVet = veterinarianRepository.GetById(veterinarianId.Value);
-                veterinarian.UserId = existingVet.UserId;
-
-                if (needCreateAccount)
-                {
-                    var authService = new AuthService();
-                    var userId = authService.RegisterUser(UsernameTextBox.Text.Trim(), PasswordBox.Password, FullNameTextBox.Text.Trim(), "veterinarian");
-
-                    if (userId.HasValue)
-                    {
-                        veterinarian.UserId = userId.Value;
-                    }
-                    else
-                    {
-                        StatusTextBlock.Text = "Ошибка при создании учетной записи. Возможно, логин уже занят";
-                        return;
-                    }
-                }
-
-                success = veterinarianRepository.UpdateVeterinarian(veterinarian);
-            }
-            else
-            {
-                var authService = new AuthService();
-                var userId = authService.RegisterUser(UsernameTextBox.Text.Trim(), PasswordBox.Password, FullNameTextBox.Text.Trim(), "veterinarian");
-
-                if (userId.HasValue)
-                {
-                    veterinarian.UserId = userId.Value;
-                    success = veterinarianRepository.AddVeterinarian(veterinarian);
-                }
-                else
-                {
-                    StatusTextBlock.Text = "Ошибка при создании учетной записи. Возможно, логин уже занят";
-                    return;
-                }
+                success = veterinarian != null;
             }
 
             if (success)

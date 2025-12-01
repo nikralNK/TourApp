@@ -234,4 +234,64 @@ namespace ShelterAppProduction.Models
         [JsonPropertyName("idanimal")]
         public int IdAnimal { get; set; }
     }
+
+    public class VeterinarianResponse
+    {
+        [JsonPropertyName("id")]
+        public int Id { get; set; }
+
+        [JsonPropertyName("fullname")]
+        public string Fullname { get; set; }
+
+        [JsonPropertyName("specialization")]
+        public string Specialization { get; set; }
+
+        [JsonPropertyName("phonenumber")]
+        public string Phonenumber { get; set; }
+
+        [JsonPropertyName("licensenumber")]
+        public string Licensenumber { get; set; }
+
+        [JsonPropertyName("iduser")]
+        public int? Iduser { get; set; }
+    }
+
+    public class VeterinarianCreateRequest
+    {
+        [JsonPropertyName("username")]
+        public string Username { get; set; }
+
+        [JsonPropertyName("password")]
+        public string Password { get; set; }
+
+        [JsonPropertyName("email")]
+        public string Email { get; set; }
+
+        [JsonPropertyName("fullname")]
+        public string Fullname { get; set; }
+
+        [JsonPropertyName("specialization")]
+        public string Specialization { get; set; }
+
+        [JsonPropertyName("phonenumber")]
+        public string Phonenumber { get; set; }
+
+        [JsonPropertyName("licensenumber")]
+        public string Licensenumber { get; set; }
+    }
+
+    public class VeterinarianUpdateRequest
+    {
+        [JsonPropertyName("fullname")]
+        public string Fullname { get; set; }
+
+        [JsonPropertyName("specialization")]
+        public string Specialization { get; set; }
+
+        [JsonPropertyName("phonenumber")]
+        public string Phonenumber { get; set; }
+
+        [JsonPropertyName("licensenumber")]
+        public string Licensenumber { get; set; }
+    }
 }
