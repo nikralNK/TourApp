@@ -92,6 +92,25 @@ namespace ShelterAppProduction.Services
             }
         }
 
+        public async Task<bool> ResetPassword(string username, string newPassword)
+        {
+            try
+            {
+                var updateRequest = new UserUpdateRequest
+                {
+                    Password = newPassword
+                };
+
+                await ApiService.PutAsync<UserResponse>("users/me", updateRequest);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Ошибка при смене пароля: {ex.Message}", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+                return false;
+            }
+        }
+
         public async Task Logout()
         {
             try

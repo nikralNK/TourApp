@@ -51,7 +51,7 @@ namespace ShelterAppProduction.Pages
             catch { }
         }
 
-        private void ChangePasswordButton_Click(object sender, RoutedEventArgs e)
+        private async void ChangePasswordButton_Click(object sender, RoutedEventArgs e)
         {
             PasswordStatusTextBlock.Text = "";
             PasswordStatusTextBlock.Foreground = System.Windows.Media.Brushes.Red;
@@ -77,13 +77,16 @@ namespace ShelterAppProduction.Pages
                 return;
             }
 
-            authService.ResetPassword(SessionManager.CurrentUser.Username, newPassword);
+            var success = await authService.ResetPassword(SessionManager.CurrentUser.Username, newPassword);
 
-            PasswordStatusTextBlock.Foreground = System.Windows.Media.Brushes.Green;
-            PasswordStatusTextBlock.Text = "Пароль успешно изменен";
+            if (success)
+            {
+                PasswordStatusTextBlock.Foreground = System.Windows.Media.Brushes.Green;
+                PasswordStatusTextBlock.Text = "Пароль успешно изменен";
 
-            NewPasswordBox.Clear();
-            ConfirmPasswordBox.Clear();
+                NewPasswordBox.Clear();
+                ConfirmPasswordBox.Clear();
+            }
         }
 
         private void SelectAvatarButton_Click(object sender, RoutedEventArgs e)

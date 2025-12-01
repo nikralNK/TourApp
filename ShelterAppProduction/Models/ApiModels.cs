@@ -66,6 +66,9 @@ namespace ShelterAppProduction.Models
         [JsonPropertyName("fullname")]
         public string Fullname { get; set; }
 
+        [JsonPropertyName("password")]
+        public string Password { get; set; }
+
         [JsonPropertyName("avatar")]
         public string Avatar { get; set; }
     }
