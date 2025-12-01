@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using ShelterAppProduction.Repositories;
@@ -11,12 +12,12 @@ namespace ShelterAppProduction.Pages
         public VeterinarianListPage()
         {
             InitializeComponent();
-            LoadVeterinarians();
+            Loaded += async (s, e) => await LoadVeterinarians();
         }
 
-        private void LoadVeterinarians()
+        private async Task LoadVeterinarians()
         {
-            var veterinarians = veterinarianRepository.GetAll();
+            var veterinarians = await veterinarianRepository.GetAll();
             VeterinariansDataGrid.ItemsSource = veterinarians;
         }
 
@@ -32,7 +33,7 @@ namespace ShelterAppProduction.Pages
             Manager.MainFrame.Navigate(new VeterinarianProfilePage(veterinarianId));
         }
 
-        private void DeleteButton_Click(object sender, RoutedEventArgs e)
+        private async void DeleteButton_Click(object sender, RoutedEventArgs e)
         {
             var button = sender as Button;
             var veterinarianId = (int)button.Tag;
@@ -45,10 +46,10 @@ namespace ShelterAppProduction.Pages
 
             if (result == MessageBoxResult.Yes)
             {
-                if (veterinarianRepository.DeleteVeterinarian(veterinarianId))
+                if (await veterinarianRepository.DeleteVeterinarian(veterinarianId))
                 {
                     MessageBox.Show("Ветеринар успешно удален", "Успех", MessageBoxButton.OK, MessageBoxImage.Information);
-                    LoadVeterinarians();
+                    await LoadVeterinarians();
                 }
                 else
                 {
