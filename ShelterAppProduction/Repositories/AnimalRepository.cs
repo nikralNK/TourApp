@@ -139,7 +139,7 @@ namespace ShelterAppProduction.Repositories
                     using (var conn = DatabaseHelper.GetConnection())
                     {
                         conn.Open();
-                        var query = "SELECT * FROM Enclosure";
+                        var query = "SELECT * FROM enclosure";
                         using (var cmd = new NpgsqlCommand(query, conn))
                         using (var reader = cmd.ExecuteReader())
                         {

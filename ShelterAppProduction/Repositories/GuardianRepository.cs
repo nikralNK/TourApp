@@ -18,7 +18,7 @@ namespace ShelterAppProduction.Repositories
                     using (var conn = DatabaseHelper.GetConnection())
                     {
                         conn.Open();
-                        var query = "SELECT * FROM Guardian WHERE Id = @id";
+                        var query = "SELECT * FROM guardian WHERE id = @id";
                         using (var cmd = new NpgsqlCommand(query, conn))
                         {
                             cmd.Parameters.AddWithValue("@id", id);
@@ -55,7 +55,7 @@ namespace ShelterAppProduction.Repositories
                     using (var conn = DatabaseHelper.GetConnection())
                     {
                         conn.Open();
-                        var query = "SELECT * FROM Guardian";
+                        var query = "SELECT * FROM guardian";
                         using (var cmd = new NpgsqlCommand(query, conn))
                         using (var reader = cmd.ExecuteReader())
                         {
@@ -89,7 +89,7 @@ namespace ShelterAppProduction.Repositories
                     {
                         conn.Open();
 
-                        var checkQuery = "SELECT Id FROM Guardian WHERE Email = @email";
+                        var checkQuery = "SELECT id FROM guardian WHERE email = @email";
                         using (var cmd = new NpgsqlCommand(checkQuery, conn))
                         {
                             cmd.Parameters.AddWithValue("@email", email);
@@ -101,7 +101,7 @@ namespace ShelterAppProduction.Repositories
                             }
                         }
 
-                        var insertQuery = "INSERT INTO Guardian (FullName, PhoneNumber, Email, RegistrationDate) VALUES (@fullName, @phone, @email, @date) RETURNING Id";
+                        var insertQuery = "INSERT INTO guardian (fullname, phonenumber, email, registrationdate) VALUES (@fullName, @phone, @email, @date) RETURNING id";
                         using (var insertCmd = new NpgsqlCommand(insertQuery, conn))
                         {
                             insertCmd.Parameters.AddWithValue("@fullName", fullName);
