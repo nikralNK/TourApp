@@ -16,7 +16,7 @@ namespace ShelterAppProduction.Repositories
                 using (var conn = DatabaseHelper.GetConnection())
                 {
                     conn.Open();
-                    var query = "SELECT * FROM MedicalRecord WHERE IdAnimal = @animalId ORDER BY VisitDate DESC";
+                    var query = "SELECT * FROM medical_record WHERE idanimal = @animalId ORDER BY visitdate DESC";
                     using (var cmd = new NpgsqlCommand(query, conn))
                     {
                         cmd.Parameters.AddWithValue("@animalId", animalId);
@@ -50,7 +50,7 @@ namespace ShelterAppProduction.Repositories
                 using (var conn = DatabaseHelper.GetConnection())
                 {
                     conn.Open();
-                    var query = "SELECT FullName FROM Veterinarian WHERE Id = @id";
+                    var query = "SELECT fullname FROM veterinarian WHERE id = @id";
                     using (var cmd = new NpgsqlCommand(query, conn))
                     {
                         cmd.Parameters.AddWithValue("@id", veterinarianId);
@@ -73,7 +73,7 @@ namespace ShelterAppProduction.Repositories
                 using (var conn = DatabaseHelper.GetConnection())
                 {
                     conn.Open();
-                    var query = @"INSERT INTO MedicalRecord (IdAnimal, IdVeterinarian, VisitDate, Diagnosis, Treatment, Notes)
+                    var query = @"INSERT INTO medical_record (idanimal, idveterinarian, visitdate, diagnosis, treatment, notes)
                                   VALUES (@idAnimal, @idVeterinarian, @visitDate, @diagnosis, @treatment, @notes)";
                     using (var cmd = new NpgsqlCommand(query, conn))
                     {
@@ -102,7 +102,7 @@ namespace ShelterAppProduction.Repositories
                 using (var conn = DatabaseHelper.GetConnection())
                 {
                     conn.Open();
-                    var query = "SELECT Id FROM Veterinarian WHERE UserId = @userId";
+                    var query = "SELECT id FROM veterinarian WHERE iduser = @userId";
                     using (var cmd = new NpgsqlCommand(query, conn))
                     {
                         cmd.Parameters.AddWithValue("@userId", userId);
