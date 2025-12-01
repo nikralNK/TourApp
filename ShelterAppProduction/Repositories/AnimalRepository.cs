@@ -1,3 +1,5 @@
+using Npgsql;
+using ShelterAppProduction.Database;
 using ShelterAppProduction.Models;
 using ShelterAppProduction.Services;
 using System;
@@ -125,6 +127,39 @@ namespace ShelterAppProduction.Repositories
             {
                 return false;
             }
+        }
+
+        public async Task<List<Enclosure>> GetAllEnclosures()
+        {
+            return await Task.Run(() =>
+            {
+                var enclosures = new List<Enclosure>();
+                try
+                {
+                    using (var conn = DatabaseHelper.GetConnection())
+                    {
+                        conn.Open();
+                        var query = "SELECT * FROM Enclosure";
+                        using (var cmd = new NpgsqlCommand(query, conn))
+                        using (var reader = cmd.ExecuteReader())
+                        {
+                            while (reader.Read())
+                            {
+                                enclosures.Add(new Enclosure
+                                {
+                                    Id = reader.GetInt32(0),
+                                    Name = reader.GetString(1),
+                                    Type = reader.IsDBNull(2) ? null : reader.GetString(2),
+                                    Capacity = reader.IsDBNull(3) ? (int?)null : reader.GetInt32(3),
+                                    Location = reader.IsDBNull(4) ? null : reader.GetString(4)
+                                });
+                            }
+                        }
+                    }
+                }
+                catch { }
+                return enclosures;
+            });
         }
 
         private Animal MapFromApiResponse(AnimalResponse response)
